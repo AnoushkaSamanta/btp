@@ -12,9 +12,16 @@
 
 **Domain:** Speech Processing · Agentic AI · Retrieval-Augmented Generation · Healthcare IT
 
-[Overview](#-overview) · [What We Are Building](#-what-we-are-building) · [Features](#-features) · [Architecture](#-architecture) · [Project Structure](#-project-structure) · [Installation](#-installation) · [Usage](#-usage) · [Team](#-team) · [Documentation](#-documentation)
+[Overview](#-overview) · [What We Are Building](#-what-we-are-building) · [Features](#-features) · [Architecture](#-architecture) · [Project Structure](#-project-structure) · [Team](#-team) · [Documentation](#-documentation)
 
 </div>
+
+---
+
+## 👥 Team
+- **M ROHAN NAIDU (2023BCS0148)** — Part 1: Indic ASR for Code-Mixed Data
+- **ANOUSHKA SAMANTA (2023BCS0147)** — Part 3: RAG System with Official Docs
+- **ADITHYA TJ (2023BCS0195)** — Part 4: Architecture
 
 ---
 
@@ -202,10 +209,6 @@ asha-copilot/
 └── README.md                            # Documentation 
 ```
 
-
-
-
-
 ### Datasets Used
 
 | Dataset | Purpose | Source |
@@ -229,7 +232,6 @@ asha-copilot/
 
 ---
 
-
 ## 🙏 Acknowledgements
 
 - [TensorFlow Object Detection API](https://github.com/tensorflow/models)
@@ -241,8 +243,6 @@ asha-copilot/
 
 ---
 
-
-
 <div align="center">
 
 **Made with ❤️ at IIIT Kottayam**
@@ -250,3 +250,4 @@ asha-copilot/
 *Empowering India's frontline health workers with AI*
 
 </div>
+
