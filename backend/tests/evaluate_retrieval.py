@@ -30,6 +30,16 @@ def evaluate_retrieval():
             "scenario": "Specific Medication Inquiry",
             "query": "What is the recommended antibiotic for a severe bacterial infection?",
             "expected_topic": "Antimicrobial guidelines"
+        },
+        {
+            "scenario": "Child Health (IMNCI Chart)",
+            "query": "A 2 year old child has severe diarrhea and sunken eyes. What is the classification and treatment?",
+            "expected_topic": "IMNCI Chart Booklet"
+        },
+        {
+            "scenario": "Newborn Care (ASHA Module 6/7)",
+            "query": "How to keep a low birth weight newborn baby warm using Kangaroo Mother Care?",
+            "expected_topic": "Skills That Save Lives ASHA Module-7"
         }
     ]
     
@@ -49,11 +59,12 @@ def evaluate_retrieval():
         for i, res in enumerate(results):
             source = res.metadata.get('source', 'Unknown File')
             page = res.metadata.get('page', 'Unknown Page')
-            # Extract just a snippet to see what it found
+            # Extract just a snippet to see what it found, stripping non-ascii chars for windows console
             snippet = res.page_content.replace('\n', ' ')[:250] + "..."
+            clean_snippet = snippet.encode('ascii', 'ignore').decode('ascii')
             
             print(f"   [CHUNK] {i+1} (Source: {os.path.basename(source)} - Page {page}):")
-            print(f"   > {snippet}\n")
+            print(f"   > {clean_snippet}\n")
             
     print("="*50)
     print("[EVALUATION COMPLETE]")
