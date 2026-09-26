@@ -21,7 +21,7 @@ def check_red_flags(symptoms: list[str]) -> list[str]:
         # Check if any part of the red flag condition matches the symptom text
         for condition, action in RED_FLAG_RULES.items():
             if condition in symptom:
-                alerts.append(f"🔴 RED FLAG: '{condition.title()}' detected! ACTION: {action}")
+                alerts.append(f"RED FLAG: '{condition.title()}' detected! ACTION: {action}")
                 
     # Deduplicate alerts in case of multiple matches
     return list(set(alerts))
