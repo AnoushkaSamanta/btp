@@ -44,8 +44,12 @@ def retrieve_guidelines(query: str, k: int = 3):
         embedding_function=embedding_model
     )
     
-    # Perform similarity search
-    retriever = vectorstore.as_retriever(search_kwargs={"k": k})
+    # Perform similarity search with Maximal Marginal Relevance (MMR)
+    # This ensures we get diverse guidelines rather than repeating the same paragraph
+    retriever = vectorstore.as_retriever(
+        search_type="mmr", 
+        search_kwargs={"k": k, "fetch_k": k * 3}
+    )
     try:
         results = retriever.invoke(query)
     except AttributeError:

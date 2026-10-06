@@ -463,37 +463,40 @@ def structure_endpoint(req: StructureRequest):
 def protocol_check_endpoint(req: ProtocolCheckRequest):
     """
     Cross-check symptoms and clinical queries against hardcoded red flags and official guidelines.
-    Integrates with Anoushka's red_flags and ChromaDB RAG retriever.
+    Integrates with Anoushka's ProtocolCheckAgent and ChromaDB RAG retriever.
     """
-    symptoms = list(req.symptoms or [])
-    if req.patient_record and req.patient_record.symptoms:
-        symptoms.extend(req.patient_record.symptoms)
-
-    # Check red flags using Anoushka's red-flag rules
-    red_flags = check_red_flags(symptoms)
-
-    # Query RAG retriever for relevant guidelines if query or symptoms present
-    guidelines_output = []
-    query_text = req.query or (" ".join(symptoms) if symptoms else None)
-
-    if query_text:
-        try:
-            from backend.rag.retriever import retrieve_guidelines
-            docs = retrieve_guidelines(query_text, k=2)
-            for doc in docs:
-                guidelines_output.append({
-                    "content": getattr(doc, "page_content", str(doc)),
-                    "metadata": getattr(doc, "metadata", {}),
-                })
-        except Exception as e:
-            logger.warning(f"RAG retrieval skipped or failed: {e}")
-
-    return ProtocolCheckResponse(
-        status="success",
-        red_flags=red_flags,
-        guidelines=guidelines_output,
-        count=len(guidelines_output)
-    )
+    try:
+        from backend.agents.protocol_check_agent import ProtocolCheckAgent
+        agent = ProtocolCheckAgent(k_retrieval=2)
+        
+        # If no patient_record provided, construct a minimal one for the agent
+        record = req.patient_record
+        if not record:
+            record = MedicalRecord(symptoms=req.symptoms or [])
+            if req.query:
+                # Append query to symptoms to ensure it is included in RAG search
+                record.symptoms.append(req.query)
+                
+        # Use the fully integrated agent
+        result = agent.analyze_record(record)
+        
+        # Format for response
+        guidelines_output = [{"content": g["content"], "metadata": {"source": g["source"], "page": g["page"]}} for g in result["retrieved_protocols"]]
+        
+        return ProtocolCheckResponse(
+            status="success",
+            red_flags=result["alerts"],
+            guidelines=guidelines_output,
+            count=len(guidelines_output)
+        )
+    except Exception as e:
+        logger.error(f"ProtocolCheckAgent failed: {e}")
+        return ProtocolCheckResponse(
+            status="error",
+            red_flags=[],
+            guidelines=[],
+            count=0
+        )
 
 
 @app.post("/scheme-match", response_model=SchemeMatchResponse, tags=["Schemes"])
@@ -608,21 +611,16 @@ async def full_pipeline_endpoint(request: Request):
         patient_record = _structure_transcript_stub(transcript or "No audio transcript recorded.")
 
     # 2. Protocol Check
-    symptoms = list(patient_record.symptoms or [])
-    red_flags = check_red_flags(symptoms)
-
+    red_flags = []
     guidelines = []
-    if symptoms or transcript:
-        try:
-            from backend.rag.retriever import retrieve_guidelines
-            docs = retrieve_guidelines(" ".join(symptoms) if symptoms else transcript, k=2)
-            for d in docs:
-                guidelines.append({
-                    "content": getattr(d, "page_content", str(d)),
-                    "metadata": getattr(d, "metadata", {})
-                })
-        except Exception as e:
-            logger.warning(f"RAG retrieval skipped in pipeline: {e}")
+    try:
+        from backend.agents.protocol_check_agent import ProtocolCheckAgent
+        agent = ProtocolCheckAgent(k_retrieval=2)
+        result = agent.analyze_record(patient_record)
+        red_flags = result["alerts"]
+        guidelines = [{"content": g["content"], "metadata": {"source": g["source"], "page": g["page"]}} for g in result["retrieved_protocols"]]
+    except Exception as e:
+        logger.warning(f"ProtocolCheckAgent failed in pipeline: {e}")
 
     # 3. Scheme Match
     eligible_schemes = _match_schemes_stub(patient_record, patient_record.household_info)
