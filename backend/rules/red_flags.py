@@ -18,8 +18,21 @@ def check_red_flags(symptoms: list[str]) -> list[str]:
     lower_symptoms = [s.lower() for s in symptoms]
     
     for symptom in lower_symptoms:
+        # Special logic for blood pressure
+        if "blood pressure >" in symptom:
+            try:
+                bp_val = symptom.split(">")[1].strip()
+                sys, dia = map(int, bp_val.split("/"))
+                if sys > 160 or dia > 110:
+                    alerts.append(f"RED FLAG: 'Blood Pressure > 160/110' detected! ACTION: {RED_FLAG_RULES['blood pressure > 160/110']}")
+            except Exception:
+                pass
+                
         # Check if any part of the red flag condition matches the symptom text
         for condition, action in RED_FLAG_RULES.items():
+            # Skip the hardcoded BP check here since we handled it dynamically
+            if condition == "blood pressure > 160/110":
+                continue
             if condition in symptom:
                 alerts.append(f"RED FLAG: '{condition.title()}' detected! ACTION: {action}")
                 
