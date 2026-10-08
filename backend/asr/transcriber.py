@@ -9,22 +9,46 @@ from typing import Dict, Any, Optional
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Lazy loading whisper to allow module import without instant heavy GPU/CPU model loading
-_whisper_model = None
+# Lazy loading avoids importing Whisper or downloading model weights at API startup.
+_whisper_models: Dict[str, Any] = {}
+ASR_LANGUAGE_ALIASES = {
+    "hindi": "hi", "hi-in": "hi", "hi": "hi",
+    "bhojpuri": "hi",  # Whisper has no Bhojpuri language code, so this is a Hindi transcription fallback.
+    "english": "en", "en-us": "en", "en-in": "en", "en": "en",
+    "tamil": "ta", "ta-in": "ta", "ta": "ta",
+    "telugu": "te", "te-in": "te", "te": "te",
+}
 
-def get_whisper_model(model_name: str = "small"):
+
+def normalize_asr_language(language: str) -> str:
+    normalized = ASR_LANGUAGE_ALIASES.get(language.strip().lower())
+    if not normalized:
+        raise ValueError("Unsupported ASR language. Use English, Hindi, Tamil, Telugu, or Bhojpuri (Hindi fallback).")
+    return normalized
+
+
+def _usable_transcript(result: Dict[str, Any]) -> str:
+    """Reject empty/silence-only Whisper output instead of acting on a guess."""
+    segments = result.get("segments") or []
+    if segments and all(float(segment.get("no_speech_prob", 0.0)) >= 0.6 for segment in segments):
+        return ""
+    return str(result.get("text") or "").strip()
+
+def get_whisper_model(model_name: Optional[str] = None):
     """Lazy initialization of the Whisper model."""
-    global _whisper_model
-    if _whisper_model is None:
+    from backend.config import WHISPER_MODEL
+    import whisper
+
+    selected_model = model_name or WHISPER_MODEL
+    if selected_model not in _whisper_models:
         try:
-            import whisper
-            logger.info(f"Loading Whisper model '{model_name}'...")
-            _whisper_model = whisper.load_model(model_name)
-            logger.info("Whisper model loaded successfully.")
-        except Exception as e:
-            logger.error(f"Failed to load Whisper model '{model_name}': {e}")
-            raise e
-    return _whisper_model
+            logger.info("Loading Whisper model '%s'...", selected_model)
+            _whisper_models[selected_model] = whisper.load_model(selected_model)
+            logger.info("Whisper model '%s' loaded successfully.", selected_model)
+        except Exception as exc:
+            logger.error("Failed to load Whisper model '%s': %s", selected_model, exc)
+            raise
+    return _whisper_models[selected_model]
 
 
 def transcribe(audio_path: str, language: str = "hi") -> str:
@@ -47,12 +71,14 @@ def transcribe(audio_path: str, language: str = "hi") -> str:
         logger.info(f"Transcribing audio file: {audio_path} with language={language}")
         
         # transcribe call
-        kwargs = {}
+        kwargs = {"condition_on_previous_text": False}
         if language:
             kwargs["language"] = language
             
         result = model.transcribe(audio_path, **kwargs)
-        transcript = result.get("text", "").strip()
+        transcript = _usable_transcript(result)
+        if not transcript:
+            raise RuntimeError("No clear speech was recognized. Check the recording and try again.")
         logger.info("Transcription completed successfully.")
         return transcript
 
@@ -77,7 +103,7 @@ def transcribe_with_fallback(audio_path: str, language: str = "hi") -> Dict[str,
         logger.error(f"Audio file not found: {audio_path}")
         return {
             "transcript": "",
-            "confidence": 0.0,
+            "confidence": None,
             "model_used": "None",
             "status": "error",
             "error": f"File not found: {audio_path}"
@@ -85,25 +111,39 @@ def transcribe_with_fallback(audio_path: str, language: str = "hi") -> Dict[str,
 
     # Attempt primary model (OpenAI Whisper / IndicWhisper)
     try:
+        from backend.config import WHISPER_MODEL
+
         transcript = transcribe(audio_path, language=language)
         return {
             "transcript": transcript,
-            "confidence": 0.85,  # Placeholder standard confidence score for whisper outputs
-            "model_used": "openai-whisper-small",
+            # Whisper's basic transcription API does not provide calibrated
+            # utterance confidence. Do not manufacture a confidence score.
+            "confidence": None,
+            "model_used": f"openai-whisper-{WHISPER_MODEL}",
             "status": "success"
         }
     except Exception as primary_error:
         logger.warning(f"Primary whisper transcription failed: {primary_error}. Trying fallback mechanism...")
+        if "No clear speech was recognized" in str(primary_error):
+            return {
+                "transcript": "",
+                "confidence": None,
+                "model_used": f"openai-whisper-{WHISPER_MODEL}",
+                "status": "error",
+                "error": str(primary_error),
+            }
         
-        # Fallback simulation/handling (e.g. OpenAI API / Bhashini API or basic fallback)
+        # Retry with the smaller local model; model caching is keyed by model name.
         try:
             # Example fallback logic using standard whisper tiny/cpu or API mock placeholder
             model_fallback = get_whisper_model(model_name="tiny")
-            result = model_fallback.transcribe(audio_path, language=language)
-            transcript = result.get("text", "").strip()
+            result = model_fallback.transcribe(audio_path, language=language, condition_on_previous_text=False)
+            transcript = _usable_transcript(result)
+            if not transcript:
+                raise RuntimeError("No clear speech was recognized. Check the recording and try again.")
             return {
                 "transcript": transcript,
-                "confidence": 0.70,
+                "confidence": None,
                 "model_used": "openai-whisper-tiny-fallback",
                 "status": "success"
             }
@@ -111,7 +151,7 @@ def transcribe_with_fallback(audio_path: str, language: str = "hi") -> Dict[str,
             logger.error(f"Fallback transcription failed: {fallback_error}")
             return {
                 "transcript": "",
-                "confidence": 0.0,
+                "confidence": None,
                 "model_used": "None",
                 "status": "error",
                 "error": f"Primary: {str(primary_error)} | Fallback: {str(fallback_error)}"

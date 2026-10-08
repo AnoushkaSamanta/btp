@@ -1,80 +1,56 @@
-import os
-from langchain_community.vectorstores import Chroma
-from backend.rag.embeddings import get_embedding_model, load_and_chunk_documents
+from pathlib import Path
+from typing import List, Tuple
+import re
 
-# Define where ChromaDB will store its data on disk
-CHROMA_DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "chroma_db")
+from backend.config import GUIDELINES_DIR
 
-def ingest_documents_to_chroma(data_dir: str):
-    """
-    Reads documents, creates chunks, and stores them in ChromaDB.
-    """
-    print("Loading and chunking documents...")
-    chunks = load_and_chunk_documents(data_dir)
-    if not chunks:
-        print("No chunks to index.")
-        return None
-    
-    print(f"Storing {len(chunks)} chunks into ChromaDB at {CHROMA_DB_DIR}...")
-    embedding_model = get_embedding_model()
-    
-    # Create and persist the vector database
-    vectorstore = Chroma.from_documents(
-        documents=chunks,
-        embedding=embedding_model,
-        persist_directory=CHROMA_DB_DIR
-    )
-    vectorstore.persist()
-    print("Documents successfully ingested into ChromaDB.")
-    return vectorstore
+_CHUNKS: List[dict] = []
 
-def retrieve_guidelines(query: str, k: int = 3):
-    """
-    Queries ChromaDB for the top k most relevant guidelines based on the query.
-    """
-    embedding_model = get_embedding_model()
-    
-    if not os.path.exists(CHROMA_DB_DIR):
-        print("Chroma database not found. Please ingest documents first.")
+
+def _split_paragraphs(text: str, source: str) -> List[dict]:
+    parts = re.split(r"\n\s*\n", text.strip())
+    chunks = []
+    for i, p in enumerate(parts):
+        p = p.strip()
+        if len(p) < 40:
+            continue
+        chunks.append({"id": f"{source}-{i}", "source": source, "text": p})
+    return chunks
+
+
+def load_chunks() -> List[dict]:
+    global _CHUNKS
+    if _CHUNKS:
+        return _CHUNKS
+    if not GUIDELINES_DIR.exists():
         return []
-        
-    # Load the existing vector database
-    vectorstore = Chroma(
-        persist_directory=CHROMA_DB_DIR,
-        embedding_function=embedding_model
-    )
-    
-    # Perform similarity search with Maximal Marginal Relevance (MMR)
-    # This ensures we get diverse guidelines rather than repeating the same paragraph
-    retriever = vectorstore.as_retriever(
-        search_type="mmr", 
-        search_kwargs={"k": k, "fetch_k": k * 3}
-    )
-    try:
-        results = retriever.invoke(query)
-    except AttributeError:
-        # Fallback for older LangChain versions
-        results = retriever.get_relevant_documents(query)
-        
-    return results
+    for path in sorted(GUIDELINES_DIR.glob("*.txt")):
+        _CHUNKS.extend(_split_paragraphs(path.read_text(encoding="utf-8"), path.stem))
+    return _CHUNKS
 
-if __name__ == "__main__":
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    data_directory = os.path.join(base_dir, "data", "guidelines")
-    
-    # 1. Ingest Documents (Will only run if the DB folder doesn't exist yet)
-    if not os.path.exists(CHROMA_DB_DIR):
-        ingest_documents_to_chroma(data_directory)
-    
-    # 2. Test Retrieval
-    test_query = "What should be done for a patient with severe bleeding?"
-    print(f"\n--- Testing Query: '{test_query}' ---")
-    results = retrieve_guidelines(test_query, k=2)
-    
-    if not results:
-        print("No results found.")
-    
-    for i, res in enumerate(results):
-        print(f"\nResult {i+1}:")
-        print(res.page_content)
-        print(f"Source: {res.metadata.get('source', 'Unknown')} (Page {res.metadata.get('page', 'N/A')})")
+
+def _tokenize(text: str) -> set:
+    # `[^\W_]` matches Unicode letters and numbers across Devanagari, Tamil,
+    # Telugu, and Latin scripts while excluding underscores and punctuation.
+    return set(re.findall(r"[^\W_]{2,}", text.lower(), flags=re.UNICODE))
+
+
+def retrieve(query: str, k: int = 4) -> List[Tuple[dict, float]]:
+    if k <= 0:
+        return []
+    chunks = load_chunks()
+    q = _tokenize(query)
+    if not q:
+        return []
+    scored = []
+    for ch in chunks:
+        tokens = _tokenize(ch["text"])
+        if not tokens:
+            continue
+        overlap = len(q & tokens)
+        score = overlap / (len(q) ** 0.5 + 0.1)
+        if score > 0:
+            scored.append((ch, round(score, 3)))
+    scored.sort(key=lambda x: x[1], reverse=True)
+    # Never present arbitrary chunks as evidence when retrieval found no match.
+    return scored[:k]

@@ -26,3 +26,4 @@ ollama
 
 python-dotenv
 pytest
+numpy

@@ -47,7 +47,7 @@ def test_transcribe_fallback_nonexistent():
     res = transcribe_with_fallback("non_existent_audio.wav")
     assert res["status"] == "error"
     assert res["transcript"] == ""
-    assert res["confidence"] == 0.0
+    assert res["confidence"] is None
 
 
 def test_medical_record_valid():

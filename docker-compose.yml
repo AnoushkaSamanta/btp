@@ -1,0 +1,23 @@
+services:
+  api:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "pip install -r requirements-lite.txt && python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    environment:
+      ASHA_USE_LLM: "false"
+  web:
+    image: node:20-alpine
+    working_dir: /web
+    volumes:
+      - ./frontend:/web
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    environment:
+      API_PROXY: http://api:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api

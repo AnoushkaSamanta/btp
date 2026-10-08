@@ -106,13 +106,11 @@ def preprocess_audio(audio_path: str, target_sr: int = 16000) -> str:
     """
     Preprocess audio for ASR.
 
-    Steps:
-    1. Load audio
-    2. Resample to target_sr (16kHz)
-    3. Convert to mono
-    4. Reduce noise (spectral gating)
-    5. Normalize volume
-    6. Save to temp file
+    Resample to 16 kHz, convert to mono, check for empty/near-silent input,
+    normalize moderate volume differences, and save as PCM WAV. Aggressive
+    spectral gating is intentionally not applied because it can remove speech
+    phonemes and make recognition less reliable when there is no clean noise-only
+    segment to estimate from.
 
     Args:
         audio_path: Path to input audio file
@@ -133,12 +131,14 @@ def preprocess_audio(audio_path: str, target_sr: int = 16000) -> str:
 
     logger.info(f"Loading audio from {audio_path}...")
     y, sr = librosa.load(audio_path, sr=target_sr, mono=True)
+    if y.size == 0 or validation["duration"] < 0.5:
+        raise ValueError("Recording is too short. Record at least half a second of speech.")
+    rms = float(np.sqrt(np.mean(np.square(y))))
+    if not np.isfinite(rms) or rms < 0.001:
+        raise ValueError("No clear speech was detected; the recording is silent or too quiet. Check the microphone and try again.")
 
-    logger.info("Applying noise reduction...")
-    y_denoised = reduce_noise_spectral_gating(y, sr)
-
-    logger.info("Normalizing audio volume...")
-    y_normalized = normalize_volume(y_denoised)
+    logger.info("Normalizing recording volume without spectral noise gating...")
+    y_normalized = normalize_volume(y)
 
     temp_dir = tempfile.gettempdir()
     temp_file_path = os.path.join(temp_dir, f"preprocessed_{os.path.basename(audio_path)}")

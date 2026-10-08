@@ -1,0 +1,11 @@
+Government scheme eligibility notes for deterministic matching (preliminary; verify officially).
+
+Janani Suraksha Yojana (JSY): Conditional cash transfer for institutional delivery. In many low-performing states all pregnant women delivering in public/accredited facilities are eligible; elsewhere BPL / SC/ST focus applies. Typical cash Rs. 1400 rural / Rs. 1000 urban. Age often 19+ and limit of two live births in some implementations. Documents: Aadhaar, MCP, bank passbook, BPL where required.
+
+Janani Shishu Suraksha Karyakram (JSSK): Entitlement to free delivery, C-section, drugs, diagnostics, blood, diet, and transport for all pregnant women in public facilities, and sick newborns up to 30 days. Universal — not BPL-restricted.
+
+Pradhan Mantri Matru Vandana Yojana (PMMVY): Wage-loss compensation, currently focused on first living child with cash in instalments against ANC and birth registration milestones. Requires Aadhaar-seeded account. Amount and instalment rules change — always verify on pmmvy.wcd.gov.in.
+
+Ayushman Bharat PM-JAY: Hospitalization cover up to Rs. 5 lakh per family per year for listed packages including some maternity complications at empaneled hospitals. Eligibility via SECC deprivation criteria or state expansions. Confirm on beneficiary identification system; do not promise cover from LLM guesswork.
+
+National Iron Plus / Anemia Mukt Bharat: IFA for all pregnant and lactating women regardless of income.

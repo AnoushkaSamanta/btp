@@ -1,6 +1,14 @@
-"""
-Database package for Voice-First ASHA Co-Pilot.
-"""
-from backend.db.database import engine, get_session, init_db
+from backend.db.database import engine, init_db, get_session
+from backend.db.models import Patient, Visit, PendingDraft, Immunization, SchemeEnrollment, AppNotification
 
-__all__ = ["engine", "get_session", "init_db"]
+__all__ = [
+    "engine",
+    "init_db",
+    "get_session",
+    "Patient",
+    "Visit",
+    "PendingDraft",
+    "Immunization",
+    "SchemeEnrollment",
+    "AppNotification",
+]

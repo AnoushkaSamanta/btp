@@ -21,9 +21,13 @@ yarn-error.log*
 .next/
 out/
 
-# IDE
+# IDE & AI Tools
 .vscode/
 .idea/
+.cursor/
+.kilo/
+.bolt/
+.pytest_cache/
 *.swp
 *.swo
 *~

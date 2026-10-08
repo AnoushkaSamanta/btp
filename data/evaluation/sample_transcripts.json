@@ -1,0 +1,24 @@
+[
+  {
+    "id": "e1",
+    "transcript": "Visited Lakshmi Devi, 24 years, eight months pregnant, BP 140/90, swelling in feet and headache. BPL household.",
+    "gold": {
+      "patient_name": "Lakshmi Devi",
+      "age": 24,
+      "pregnancy_status": true,
+      "blood_pressure": "140/90",
+      "bp_status": "high",
+      "swelling": true
+    }
+  },
+  {
+    "id": "e2",
+    "transcript": "Sunita Kumari 28 years ANC, Hb 8.2, first child, Aadhaar linked, BPL.",
+    "gold": {
+      "patient_name": "Sunita Kumari",
+      "age": 28,
+      "hemoglobin": 8.2,
+      "first_living_child": true
+    }
+  }
+]

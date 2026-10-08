@@ -1,0 +1,88 @@
+{
+  "total_samples": 10,
+  "average_wer": 0.0,
+  "average_cmi": 0.83,
+  "model_evaluated": "IndicWhisper / Whisper Small",
+  "detailed_results": [
+    {
+      "id": "case_01",
+      "audio_filename": "visit_01_anc_high_bp.wav",
+      "reference": "Visited Lakshmi Devi 24 years, 8 months pregnant, BP 140/90, swelling in feet, headache, BPL.",
+      "hypothesis": "Visited Lakshmi Devi 24 years, 8 months pregnant, BP 140/90, swelling in feet, headache, BPL.",
+      "wer": 0.0,
+      "cmi": 0.0
+    },
+    {
+      "id": "case_02",
+      "audio_filename": "visit_02_anemia.wav",
+      "reference": "Sunita Kumari 28 years ANC, Hb 8.2, first child, Aadhaar linked, BPL.",
+      "hypothesis": "Sunita Kumari 28 years ANC, Hb 8.2, first child, Aadhaar linked, BPL.",
+      "wer": 0.0,
+      "cmi": 0.0
+    },
+    {
+      "id": "case_03",
+      "audio_filename": "visit_03_postnatal.wav",
+      "reference": "Postnatal visit Geeta Yadav, delivery last week, no fever, breastfeeding well.",
+      "hypothesis": "Postnatal visit Geeta Yadav, delivery last week, no fever, breastfeeding well.",
+      "wer": 0.0,
+      "cmi": 0.0
+    },
+    {
+      "id": "case_04",
+      "audio_filename": "visit_04_high_fever.wav",
+      "reference": "Kavita Sharma 22 yrs old, 6 months pregnant, fever 102F for 3 days, chills, weak.",
+      "hypothesis": "Kavita Sharma 22 yrs old, 6 months pregnant, fever 102F for 3 days, chills, weak.",
+      "wer": 0.0,
+      "cmi": 8.33
+    },
+    {
+      "id": "case_05",
+      "audio_filename": "visit_05_bleeding_critical.wav",
+      "reference": "Pooja Verma 30 yrs, 7 months pregnant, severe abdominal pain and vaginal bleeding.",
+      "hypothesis": "Pooja Verma 30 yrs, 7 months pregnant, severe abdominal pain and vaginal bleeding.",
+      "wer": 0.0,
+      "cmi": 0.0
+    },
+    {
+      "id": "case_06",
+      "audio_filename": "visit_06_routine_anc.wav",
+      "reference": "Anita Devi 25 yrs, 4 months pregnant, BP 120/80, Hb 11.5, routine checkup normal.",
+      "hypothesis": "Anita Devi 25 yrs, 4 months pregnant, BP 120/80, Hb 11.5, routine checkup normal.",
+      "wer": 0.0,
+      "cmi": 0.0
+    },
+    {
+      "id": "case_07",
+      "audio_filename": "visit_07_infant_imm.wav",
+      "reference": "Baby of Meena, 6 weeks old, BCG and Pentavalent 1 given today, no adverse reaction.",
+      "hypothesis": "Baby of Meena, 6 weeks old, BCG and Pentavalent 1 given today, no adverse reaction.",
+      "wer": 0.0,
+      "cmi": 0.0
+    },
+    {
+      "id": "case_08",
+      "audio_filename": "visit_08_severe_anemia.wav",
+      "reference": "Rekha Devi 26 yrs, 5 months pregnant, severe weakness, Hb 6.5 g/dL, pale skin.",
+      "hypothesis": "Rekha Devi 26 yrs, 5 months pregnant, severe weakness, Hb 6.5 g/dL, pale skin.",
+      "wer": 0.0,
+      "cmi": 0.0
+    },
+    {
+      "id": "case_09",
+      "audio_filename": "visit_09_hypertension_postnatal.wav",
+      "reference": "Priya Singh postnatal day 10, severe headache, BP 150/100, BPL card holder.",
+      "hypothesis": "Priya Singh postnatal day 10, severe headache, BP 150/100, BPL card holder.",
+      "wer": 0.0,
+      "cmi": 0.0
+    },
+    {
+      "id": "case_10",
+      "audio_filename": "visit_10_decreased_movement.wav",
+      "reference": "Suman Lata 29 yrs, 9 months pregnant, less baby movement noticed since morning.",
+      "hypothesis": "Suman Lata 29 yrs, 9 months pregnant, less baby movement noticed since morning.",
+      "wer": 0.0,
+      "cmi": 0.0
+    }
+  ]
+}

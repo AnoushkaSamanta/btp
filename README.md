@@ -6,15 +6,76 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-purple?style=for-the-badge)](https://langchain-ai.github.io/langgraph/)
+[![Prototype](https://img.shields.io/badge/Status-Prototype-orange?style=for-the-badge)](#launch-status)
 [![React](https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 **Domain:** Speech Processing · Agentic AI · Retrieval-Augmented Generation · Healthcare IT
 
-[Overview](#-overview) · [What We Are Building](#-what-we-are-building) · [Features](#-features) · [Architecture](#-architecture) · [Project Structure](#-project-structure) · [Team](#-team) · [Documentation](#-documentation)
+[Overview](#-overview) · [Quick start](#-quick-start) · [What We Are Building](#-what-we-are-building) · [Features](#-features) · [Architecture](#-architecture) · [Project Structure](#-project-structure) · [Team](#-team) · [Documentation](#-documentation)
 
 </div>
+
+---
+
+## 🚀 Quick start
+
+The app is **worker-facing only**. Do not demo it as a patient chatbot.
+
+**1. Backend (from the repository root)**
+
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
+pip install -r requirements-lite.txt
+python -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+API docs: http://127.0.0.1:8000/docs
+
+**2. Frontend**
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open http://127.0.0.1:5173 — Vite proxies `/api` to port 8000.
+
+**3. Document a visit**
+
+Open **Voice Co-Pilot** → **Document visit**. Type or speak (Chrome speech recognition). Review flags and **preliminary** scheme matches, then **Confirm and save**. Nothing is persisted until confirmation.
+
+Optional: `pip install -r requirements.txt` plus ffmpeg for Whisper ASR; set `ASHA_USE_LLM=true` and run Ollama for JSON extraction via Llama.
+
+### Proposal cross-check
+
+See [proposal implementation status](docs/proposal_implementation_status.md) for the objective-by-objective checklist and [offline evaluation report](evaluation/results/offline_evaluation.md) for the metrics this repository can actually reproduce.
+
+### Single-Command Setup & Run
+
+Start both backend and frontend servers together:
+```bash
+bash run.sh
+```
+
+### Automated Evaluation Suite
+
+Run the full automated evaluation suite (ASR WER/CMI metrics + Multi-Agent vs. Single-Agent Ablation Study):
+```bash
+python evaluation/run_all.py
+```
+
+Generated evaluation artifacts:
+- `evaluation/results/asr_eval.json`
+- `evaluation/results/ablation.json`
+- `evaluation/results/plots/ablation_plot.png`
+
+```bash
+pytest backend/tests -q
+```
 
 ---
 
@@ -76,7 +137,7 @@ We are building a **voice-first, multi-agent co-pilot** that:
 | **Input** | Text / Forms | ✅ **Voice-first, code-mixed** |
 | **Safety** | LLM-only judgement | ✅ **RAG + hardcoded red flags** |
 | **Eligibility** | LLM-guessed | ✅ **Deterministic rule engine** |
-| **Evaluation** | Single-agent | ✅ **Multi-agent vs single-agent ablation** |
+| **Evaluation** | Limited smoke examples | **Synthetic extraction smoke report; full ablation pending** |
 
 ---
 
@@ -87,25 +148,25 @@ We are building a **voice-first, multi-agent co-pilot** that:
 | Feature | Description |
 | :--- | :--- |
 | 🎙️ **Voice-First Capture** | Natural code-mixed speech input — no typing required |
-| 🤖 **Multi-Agent Architecture** | 4 specialized agents coordinated by LangGraph supervisor |
+| 🤖 **Multi-Agent Architecture** | Specialized Python modules coordinated by a sequential supervisor (LangGraph is not implemented) |
 | 📊 **Structured JSON Extraction** | Converts free-form speech to schema-validated medical records |
 | 🛡️ **Hybrid Safety Design** | RAG-grounded protocols + hardcoded red-flag rules |
 | 🏥 **Deterministic Scheme Matching** | Rule-based eligibility (not LLM guessing) for PMMVY/JSY/JSSK |
 | 🔊 **Voice Read-Back Confirmation** | Summary read back in regional language before saving |
 | 📄 **Automated Visit Reports** | Formal reports + follow-up task lists |
-| 📈 **Analytics & Evaluation** | WER, F1, Precision/Recall, Ablation Study |
+| 📈 **Analytics & Evaluation** | Reproducible field extraction smoke report; see proposal status for metrics still missing |
 
 ### 🔬 Technical Highlights
 
 | Layer | Tool | Purpose |
 | :--- | :--- | :--- |
-| **ASR** | IndicWhisper / IndicConformer / Bhashini API | Transcribe code-mixed Indic speech |
-| **TTS** | Bhashini TTS / Coqui TTS | Natural regional-language read-back |
-| **Orchestration** | LangGraph | Multi-agent state graph |
+| **ASR** | OpenAI Whisper package, optional install | Local audio transcription; Indic/code-mixed accuracy is not yet evaluated |
+| **TTS** | Browser SpeechSynthesis | Read-back where the selected browser/device provides a suitable voice |
+| **Orchestration** | Python supervisor | Sequential calls to specialized modules |
 | **LLM** | Llama-3 via Ollama / Groq free tier | Structuring, protocol, report |
-| **Vector DB** | ChromaDB / FAISS | Store and retrieve protocol chunks |
+| **Guideline retrieval** | Local `.txt` paragraph overlap search | Prototype retrieval over included summary notes; official corpus/embeddings are not implemented |
 | **Embeddings** | sentence-transformers | Embed protocol text + queries |
-| **Database** | SQLite / PostgreSQL | Patients, visits, scheme flags, tasks |
+| **Database** | SQLite / SQLModel | Local demo patients, visits, scheme flags, tasks |
 | **Backend** | FastAPI | Wire ASR → agents → TTS |
 | **Frontend** | React / Next.js | Mic input, visit history, task list |
 | **Schema** | Pydantic | Enforce structured JSON output |
@@ -123,10 +184,10 @@ We are building a **voice-first, multi-agent co-pilot** that:
 
 | Agent | Responsibility | Primary Tool |
 | :--- | :--- | :--- |
-| **Supervisor Agent** | Classifies intent, routes to relevant agents | LangGraph state graph |
+| **Supervisor Agent** | Normalizes transcript and calls specialized modules | Python function pipeline |
 | **Structuring Agent** | Converts speech → validated JSON medical record | LLM few-shot + Pydantic |
-| **Protocol Check Agent** | Retrieves NHM/ICMR protocols, flags escalations | RAG (ChromaDB) + hardcoded rules |
-| **Scheme Match Agent** | Matches household against PMMVY/JSY/JSSK | Deterministic SQL/rule engine |
+| **Protocol Check Agent** | Retrieves included guideline summary text and runs hardcoded rules | Paragraph overlap retrieval + independent rules |
+| **Scheme Match Agent** | Applies preliminary local rules to household profile | Deterministic Python rules; must be officially reviewed |
 | **Report Generator Agent** | Drafts visit report + follow-up tasks | LLM generation |
 | **Response Composer** | Merges all agent outputs into one summary | LLM synthesis |
 | **TTS Layer** | Converts summary → regional-language speech | Bhashini / Coqui TTS |
@@ -143,7 +204,7 @@ asha-copilot/
 │   │
 │   ├── agents/
 │   │   ├── __init__.py
-│   │   ├── supervisor.py                # LangGraph supervisor
+│   │   ├── supervisor.py                # Sequential Python supervisor
 │   │   ├── structuring_agent.py         # Speech → JSON 
 │   │   ├── protocol_check_agent.py      # RAG + red flags 
 │   │   ├── scheme_match_agent.py        # PMMVY/JSY/JSSK rules 
@@ -236,7 +297,7 @@ asha-copilot/
 
 - [TensorFlow Object Detection API](https://github.com/tensorflow/models)
 - [AI4Bharat](https://ai4bharat.org/) for Indic speech resources
-- [LangChain / LangGraph](https://langchain-ai.github.io/langgraph/) for multi-agent orchestration
+- Optional Ollama integration for local text generation (not required for deterministic demo mode)
 - [ChromaDB](https://www.trychroma.com/) for vector storage
 - [FastAPI](https://fastapi.tiangolo.com/) for the backend framework
 - [National Health Mission](https://nhm.gov.in) and [ICMR](https://icmr.gov.in) for clinical guidelines
