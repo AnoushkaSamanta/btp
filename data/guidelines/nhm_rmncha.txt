@@ -1,0 +1,17 @@
+NHM RMNCH+A home-visit protocols (summarized for RAG grounding; not a substitute for official PDFs).
+
+Antenatal care (ANC): Every pregnant woman should receive at least four ANC visits. Visit 1 as early as possible in first trimester; visit 2 at 4–6 months; visit 3 at 7–8 months; visit 4 at 9 months. Register pregnancy, issue MCP card, record LMP, gravida, para, and risk factors.
+
+Maternal danger signs requiring immediate referral: vaginal bleeding, convulsions, severe headache with blurred vision, high fever, severe abdominal pain, labour lasting more than 12 hours, premature rupture of membranes, swelling of face and hands with high blood pressure, decreased or absent fetal movements.
+
+Blood pressure: Systolic 140 or diastolic 90 or above is hypertension in pregnancy. 160/110 or above is severe. Combine with proteinuria or swelling as a pre-eclampsia warning. Repeat BP after 15 minutes rest.
+
+Anemia: Screen Hb at registration and later visits. Hb below 11 g/dL is anemia in pregnancy. Mild 10–10.9: one IFA daily. Moderate 7–9.9: two IFA daily. Severe below 7: urgent referral for IV iron or transfusion at FRU.
+
+IFA: 60 mg elemental iron + 400 mcg folic acid daily for 180 days in pregnancy and 180 days postpartum as per current Anemia Mukt Bharat operational guidance. Counsel tea/coffee delay after tablets. Deworm with albendazole in second trimester if indicated.
+
+Home visit content: Ask about diet, rest, danger signs, IFA compliance, Td immunization, birth preparedness, identified facility, transport, and companion. Counsel exclusive breastfeeding intention and family planning.
+
+High-risk pregnancy: previous stillbirth or neonatal death, previous C-section, grand multipara, very young or older mother, hypertension, diabetes, thyroid disease, severe anemia, twins. These women need extra visits and PHC/MO review.
+
+Referral: ASHA does not treat emergencies. Arrange transport under JSSK where available. Inform ANM/MO. Stay with the woman if critical until handover.

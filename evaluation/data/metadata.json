@@ -1,0 +1,246 @@
+[
+  {
+    "id": "case_01",
+    "audio_filename": "visit_01_anc_high_bp.wav",
+    "transcript": "Visited Lakshmi Devi 24 years, 8 months pregnant, BP 140/90, swelling in feet, headache, BPL.",
+    "language": "hi-en",
+    "cmi_score": 0.35,
+    "ground_truth": {
+      "patient_name": "Lakshmi Devi",
+      "age": 24,
+      "pregnancy_status": true,
+      "gestational_age_months": 8,
+      "blood_pressure": "140/90",
+      "bp_status": "high",
+      "swelling": true,
+      "symptoms": ["swelling", "headache"],
+      "bpl_card": true,
+      "red_flags": [
+        "High blood pressure in pregnancy",
+        "Pre-eclampsia risk / Swelling and headache"
+      ],
+      "eligible_schemes": [
+        "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+        "Janani Suraksha Yojana (JSY)",
+        "Ayushman Bharat (PM-JAY)"
+      ],
+      "protocol_citations": [
+        "NHM Guidelines for ANC High Risk Pregnancy Management"
+      ]
+    }
+  },
+  {
+    "id": "case_02",
+    "audio_filename": "visit_02_anemia.wav",
+    "transcript": "Sunita Kumari 28 years ANC, Hb 8.2, first child, Aadhaar linked, BPL.",
+    "language": "hi-en",
+    "cmi_score": 0.28,
+    "ground_truth": {
+      "patient_name": "Sunita Kumari",
+      "age": 28,
+      "pregnancy_status": true,
+      "hemoglobin": 8.2,
+      "first_living_child": true,
+      "bpl_card": true,
+      "red_flags": [
+        "Moderate Anemia (Hb 8.2 g/dL)"
+      ],
+      "eligible_schemes": [
+        "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+        "Janani Suraksha Yojana (JSY)",
+        "Ayushman Bharat (PM-JAY)"
+      ],
+      "protocol_citations": [
+        "Anemia Mukt Bharat Protocol"
+      ]
+    }
+  },
+  {
+    "id": "case_03",
+    "audio_filename": "visit_03_postnatal.wav",
+    "transcript": "Postnatal visit Geeta Yadav, delivery last week, no fever, breastfeeding well.",
+    "language": "hi-en",
+    "cmi_score": 0.40,
+    "ground_truth": {
+      "patient_name": "Geeta Yadav",
+      "pregnancy_status": false,
+      "trimester": "Postnatal",
+      "symptoms": [],
+      "red_flags": [],
+      "eligible_schemes": [
+        "Janani Shishu Suraksha Karyakram (JSSK)"
+      ],
+      "protocol_citations": [
+        "PNC Home Visit Schedule NHM"
+      ]
+    }
+  },
+  {
+    "id": "case_04",
+    "audio_filename": "visit_04_high_fever.wav",
+    "transcript": "Kavita Sharma 22 yrs old, 6 months pregnant, fever 102F for 3 days, chills, weak.",
+    "language": "hi-en",
+    "cmi_score": 0.32,
+    "ground_truth": {
+      "patient_name": "Kavita Sharma",
+      "age": 22,
+      "pregnancy_status": true,
+      "gestational_age_months": 6,
+      "temperature": 102.0,
+      "symptoms": ["fever", "fatigue"],
+      "red_flags": [
+        "High fever in pregnancy"
+      ],
+      "eligible_schemes": [
+        "Janani Suraksha Yojana (JSY)"
+      ],
+      "protocol_citations": [
+        "NHM Fever in Pregnancy Management"
+      ]
+    }
+  },
+  {
+    "id": "case_05",
+    "audio_filename": "visit_05_bleeding_critical.wav",
+    "transcript": "Pooja Verma 30 yrs, 7 months pregnant, severe abdominal pain and vaginal bleeding.",
+    "language": "hi-en",
+    "cmi_score": 0.30,
+    "ground_truth": {
+      "patient_name": "Pooja Verma",
+      "age": 30,
+      "pregnancy_status": true,
+      "gestational_age_months": 7,
+      "symptoms": ["abdominal pain", "bleeding"],
+      "red_flags": [
+        "Vaginal bleeding in third trimester",
+        "Severe abdominal pain"
+      ],
+      "eligible_schemes": [
+        "Janani Suraksha Yojana (JSY)",
+        "Janani Shishu Suraksha Karyakram (JSSK)"
+      ],
+      "protocol_citations": [
+        "Obstetric Emergency Referral Guidelines NHM"
+      ]
+    }
+  },
+  {
+    "id": "case_06",
+    "audio_filename": "visit_06_routine_anc.wav",
+    "transcript": "Anita Devi 25 yrs, 4 months pregnant, BP 120/80, Hb 11.5, routine checkup normal.",
+    "language": "hi-en",
+    "cmi_score": 0.25,
+    "ground_truth": {
+      "patient_name": "Anita Devi",
+      "age": 25,
+      "pregnancy_status": true,
+      "gestational_age_months": 4,
+      "blood_pressure": "120/80",
+      "bp_status": "normal",
+      "hemoglobin": 11.5,
+      "symptoms": [],
+      "red_flags": [],
+      "eligible_schemes": [
+        "Pradhan Mantri Matru Vandana Yojana (PMMVY)"
+      ],
+      "protocol_citations": [
+        "Routine ANC Protocols NHM"
+      ]
+    }
+  },
+  {
+    "id": "case_07",
+    "audio_filename": "visit_07_infant_imm.wav",
+    "transcript": "Baby of Meena, 6 weeks old, BCG and Pentavalent 1 given today, no adverse reaction.",
+    "language": "hi-en",
+    "cmi_score": 0.38,
+    "ground_truth": {
+      "patient_name": "Baby of Meena",
+      "age": 0,
+      "pregnancy_status": false,
+      "symptoms": [],
+      "red_flags": [],
+      "eligible_schemes": [
+        "Universal Immunization Programme (UIP)"
+      ],
+      "protocol_citations": [
+        "UIP National Immunization Schedule"
+      ]
+    }
+  },
+  {
+    "id": "case_08",
+    "audio_filename": "visit_08_severe_anemia.wav",
+    "transcript": "Rekha Devi 26 yrs, 5 months pregnant, severe weakness, Hb 6.5 g/dL, pale skin.",
+    "language": "hi-en",
+    "cmi_score": 0.33,
+    "ground_truth": {
+      "patient_name": "Rekha Devi",
+      "age": 26,
+      "pregnancy_status": true,
+      "gestational_age_months": 5,
+      "hemoglobin": 6.5,
+      "symptoms": ["fatigue"],
+      "red_flags": [
+        "Severe Anemia (Hb < 7.0 g/dL) - Urgent Blood Transfusion / PHC Referral"
+      ],
+      "eligible_schemes": [
+        "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+        "Janani Suraksha Yojana (JSY)"
+      ],
+      "protocol_citations": [
+        "Severe Anemia Management NHM Guidelines"
+      ]
+    }
+  },
+  {
+    "id": "case_09",
+    "audio_filename": "visit_09_hypertension_postnatal.wav",
+    "transcript": "Priya Singh postnatal day 10, severe headache, BP 150/100, BPL card holder.",
+    "language": "hi-en",
+    "cmi_score": 0.36,
+    "ground_truth": {
+      "patient_name": "Priya Singh",
+      "pregnancy_status": false,
+      "trimester": "Postnatal",
+      "blood_pressure": "150/100",
+      "bp_status": "high",
+      "symptoms": ["headache"],
+      "bpl_card": true,
+      "red_flags": [
+        "Postpartum Hypertension / Eclampsia Risk"
+      ],
+      "eligible_schemes": [
+        "Janani Shishu Suraksha Karyakram (JSSK)",
+        "Ayushman Bharat (PM-JAY)"
+      ],
+      "protocol_citations": [
+        "Postpartum Hypertension NHM Guidelines"
+      ]
+    }
+  },
+  {
+    "id": "case_10",
+    "audio_filename": "visit_10_decreased_movement.wav",
+    "transcript": "Suman Lata 29 yrs, 9 months pregnant, less baby movement noticed since morning.",
+    "language": "hi-en",
+    "cmi_score": 0.30,
+    "ground_truth": {
+      "patient_name": "Suman Lata",
+      "age": 29,
+      "pregnancy_status": true,
+      "gestational_age_months": 9,
+      "symptoms": ["decreased fetal movement"],
+      "red_flags": [
+        "Decreased Fetal Movement in term pregnancy"
+      ],
+      "eligible_schemes": [
+        "Janani Suraksha Yojana (JSY)",
+        "Janani Shishu Suraksha Karyakram (JSSK)"
+      ],
+      "protocol_citations": [
+        "Fetal Wellbeing Monitoring NHM Protocol"
+      ]
+    }
+  }
+]
