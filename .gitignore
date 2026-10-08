@@ -5,6 +5,7 @@ __pycache__/
 *.so
 .Python
 venv/
+.venv/
 env/
 ENV/
 .env
@@ -39,7 +40,6 @@ Thumbs.db
 *.pb
 *.h5
 *.pkl
-data/guidelines/*.pdf
 data/evaluation/*.wav
 data/evaluation/*.mp3
 
