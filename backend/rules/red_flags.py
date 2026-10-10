@@ -80,7 +80,7 @@ def evaluate_red_flags(record: Dict[str, Any]) -> List[Dict[str, Any]]:
             "source": "Hardcoded red-flag rule",
         })
 
-    if pregnant and any(t in text for t in ["no fetal", "less movement", "decreased fetal", "baby not moving", "हलचल कम"]):
+    if any(t in text for t in ["no fetal", "less movement", "decreased fetal", "baby not moving", "fetal movement", "हलचल कम"]):
         flags.append({
             "id": "dfm",
             "severity": "high",
@@ -128,16 +128,47 @@ def evaluate_red_flags(record: Dict[str, Any]) -> List[Dict[str, Any]]:
                 })
         except (TypeError, ValueError):
             pass
+    elif "fever" in text or "high fever" in text:
+        flags.append({
+            "id": "fever",
+            "severity": "high" if pregnant else "medium",
+            "title": "Fever",
+            "detail": "Fever reported without specific temperature.",
+            "action": "Check temperature. Rule out infection / malaria / UTI.",
+            "source": "Hardcoded red-flag rule",
+        })
 
     if any(t in text for t in ["severe headache", "blurred vision", "tezi se dard", "धुंधला"]):
-        if pregnant:
+        if pregnant or "headache" in text:
             flags.append({
                 "id": "neuro_danger",
                 "severity": "critical",
-                "title": "Headache / visual change in pregnancy",
-                "detail": "Danger sign of pre-eclampsia.",
+                "title": "Headache / visual change",
+                "detail": "Possible neurological danger or pre-eclampsia if pregnant.",
                 "action": "Immediate referral. Check BP now.",
                 "source": "Hardcoded red-flag rule",
+            })
+            
+    # IMNCI Pediatric Red Flags
+    if any(t in text for t in ["fast breathing", "chest in-drawing", "chest indrawing", "stridor"]):
+        flags.append({
+            "id": "imnci_pneumonia",
+            "severity": "critical",
+            "title": "Severe Pneumonia or Very Severe Disease",
+            "detail": "Fast breathing or chest in-drawing detected.",
+            "action": "Give first dose of appropriate antibiotic and refer URGENTLY to hospital.",
+            "source": "IMNCI Guidelines",
+        })
+        
+    if any(t in text for t in ["sunken eyes", "skin pinch goes back slowly", "lethargic", "unconscious", "not able to drink"]):
+        if "loose stool" in text or "diarrhea" in text or "diarrhoea" in text:
+            flags.append({
+                "id": "imnci_dehydration",
+                "severity": "critical",
+                "title": "Severe Dehydration",
+                "detail": "Diarrhea with sunken eyes or slow skin pinch.",
+                "action": "Give fluid for severe dehydration (Plan C) or refer URGENTLY to hospital with mother giving ORS.",
+                "source": "IMNCI Guidelines",
             })
 
     return flags

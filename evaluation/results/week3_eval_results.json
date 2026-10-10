@@ -1,0 +1,150 @@
+{
+  "metrics": {
+    "avg_rag_precision": 0.31666666666666665,
+    "avg_rag_recall": 0.6
+  },
+  "detailed_results": [
+    {
+      "id": "case-001",
+      "description": "A 25-year-old pregnant woman in her second trimester reports severe headache, blurred vision, and swelling in her hands and face. Her blood pressure is 150/100 mmHg.",
+      "expected_guidelines": [
+        "STG_HighRiskPregnancy.pdf",
+        "STG_Hypertension.pdf"
+      ],
+      "retrieved_sources": [
+        "STG_Hypertension.pdf",
+        "book-no-6.pdf",
+        "Skills That Save Lives ASHA Module-7 English.pdf"
+      ],
+      "rag_recall": 0.5,
+      "rag_precision": 0.3333333333333333,
+      "expected_red_flags": [
+        "Severe headache",
+        "Blurred vision",
+        "Swelling in hands/face",
+        "High Blood Pressure (150/100)"
+      ],
+      "triggered_red_flags": [
+        "Possible pre-eclampsia pattern",
+        "Headache / visual change"
+      ],
+      "extracted_record_summary": {
+        "symptoms": [
+          "swelling",
+          "headache",
+          "blurred vision"
+        ],
+        "pregnancy_status": true,
+        "blood_pressure": "150/100"
+      }
+    },
+    {
+      "id": "case-002",
+      "description": "A 6-month-old infant is brought with a cough and fast breathing (55 breaths per minute) for the last 3 days. No chest in-drawing is observed.",
+      "expected_guidelines": [
+        "imnci_chart_booklet.pdf"
+      ],
+      "retrieved_sources": [
+        "imnci_chart_booklet.pdf",
+        "Skills That Save Lives ASHA Module-7 English.pdf"
+      ],
+      "rag_recall": 1.0,
+      "rag_precision": 0.5,
+      "expected_red_flags": [
+        "Fast breathing (55 bpm)"
+      ],
+      "triggered_red_flags": [
+        "Severe Pneumonia or Very Severe Disease"
+      ],
+      "extracted_record_summary": {
+        "symptoms": [],
+        "pregnancy_status": null,
+        "blood_pressure": null
+      }
+    },
+    {
+      "id": "case-003",
+      "description": "A 30-year-old woman presents with high fever, chills, and lower abdominal pain. She had a normal vaginal delivery 5 days ago. Foul-smelling vaginal discharge is present.",
+      "expected_guidelines": [
+        "STG_HighRiskPregnancy.pdf",
+        "National_Antimicrobial_Guidelines.pdf"
+      ],
+      "retrieved_sources": [
+        "book-no-6.pdf",
+        "imnci_chart_booklet.pdf",
+        "Skills That Save Lives ASHA Module-7 English.pdf",
+        "STG_HighRiskPregnancy.pdf"
+      ],
+      "rag_recall": 0.5,
+      "rag_precision": 0.25,
+      "expected_red_flags": [
+        "High fever",
+        "Lower abdominal pain",
+        "Foul-smelling discharge postpartum"
+      ],
+      "triggered_red_flags": [
+        "Fever"
+      ],
+      "extracted_record_summary": {
+        "symptoms": [
+          "fever",
+          "abdominal pain"
+        ],
+        "pregnancy_status": false,
+        "blood_pressure": null
+      }
+    },
+    {
+      "id": "case-004",
+      "description": "A 1-year-old child presents with loose stools for 4 days. The child is irritable, has sunken eyes, and skin pinch goes back slowly. He is drinking eagerly.",
+      "expected_guidelines": [
+        "imnci_chart_booklet.pdf"
+      ],
+      "retrieved_sources": [
+        "imnci_chart_booklet.pdf",
+        "Skills That Save Lives ASHA Module-7 English.pdf"
+      ],
+      "rag_recall": 1.0,
+      "rag_precision": 0.5,
+      "expected_red_flags": [
+        "Sunken eyes",
+        "Skin pinch goes back slowly",
+        "Irritable"
+      ],
+      "triggered_red_flags": [
+        "Severe Dehydration"
+      ],
+      "extracted_record_summary": {
+        "symptoms": [],
+        "pregnancy_status": null,
+        "blood_pressure": null
+      }
+    },
+    {
+      "id": "case-005",
+      "description": "A 20-year-old primigravida at 38 weeks gestation complains of decreased fetal movements for the past 12 hours. Her vitals are normal.",
+      "expected_guidelines": [
+        "STG_HighRiskPregnancy.pdf"
+      ],
+      "retrieved_sources": [
+        "book-no-6.pdf",
+        "imnci_chart_booklet.pdf"
+      ],
+      "rag_recall": 0.0,
+      "rag_precision": 0.0,
+      "expected_red_flags": [
+        "Decreased fetal movements"
+      ],
+      "triggered_red_flags": [
+        "Decreased fetal movement"
+      ],
+      "extracted_record_summary": {
+        "symptoms": [
+          "decreased fetal movement"
+        ],
+        "pregnancy_status": null,
+        "blood_pressure": null
+      }
+    }
+  ]
+}

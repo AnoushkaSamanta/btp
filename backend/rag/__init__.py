@@ -1,3 +1,3 @@
-from backend.rag.retriever import retrieve, load_chunks
+from backend.rag.retriever import retrieve
 
 __all__ = ["retrieve", "load_chunks"]

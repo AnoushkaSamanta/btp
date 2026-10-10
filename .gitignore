@@ -46,6 +46,7 @@ data/evaluation/*.mp3
 # Database
 *.db
 *.sqlite3
+chroma_db/
 
 # Logs
 *.log
