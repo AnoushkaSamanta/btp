@@ -1,0 +1,37 @@
+[
+  {
+    "id": "case-001",
+    "description": "A 25-year-old pregnant woman in her second trimester reports severe headache, blurred vision, and swelling in her hands and face. Her blood pressure is 150/100 mmHg.",
+    "expected_red_flags": ["Severe headache", "Blurred vision", "Swelling in hands/face", "High Blood Pressure (150/100)"],
+    "expected_guidelines": ["STG_HighRiskPregnancy.pdf", "STG_Hypertension.pdf"],
+    "notes": "Classic signs of pre-eclampsia."
+  },
+  {
+    "id": "case-002",
+    "description": "A 6-month-old infant is brought with a cough and fast breathing (55 breaths per minute) for the last 3 days. No chest in-drawing is observed.",
+    "expected_red_flags": ["Fast breathing (55 bpm)"],
+    "expected_guidelines": ["imnci_chart_booklet.pdf"],
+    "notes": "Pneumonia according to IMNCI guidelines."
+  },
+  {
+    "id": "case-003",
+    "description": "A 30-year-old woman presents with high fever, chills, and lower abdominal pain. She had a normal vaginal delivery 5 days ago. Foul-smelling vaginal discharge is present.",
+    "expected_red_flags": ["High fever", "Lower abdominal pain", "Foul-smelling discharge postpartum"],
+    "expected_guidelines": ["STG_HighRiskPregnancy.pdf", "National_Antimicrobial_Guidelines.pdf"],
+    "notes": "Puerperal sepsis."
+  },
+  {
+    "id": "case-004",
+    "description": "A 1-year-old child presents with loose stools for 4 days. The child is irritable, has sunken eyes, and skin pinch goes back slowly. He is drinking eagerly.",
+    "expected_red_flags": ["Sunken eyes", "Skin pinch goes back slowly", "Irritable"],
+    "expected_guidelines": ["imnci_chart_booklet.pdf"],
+    "notes": "Some dehydration as per IMNCI."
+  },
+  {
+    "id": "case-005",
+    "description": "A 20-year-old primigravida at 38 weeks gestation complains of decreased fetal movements for the past 12 hours. Her vitals are normal.",
+    "expected_red_flags": ["Decreased fetal movements"],
+    "expected_guidelines": ["STG_HighRiskPregnancy.pdf"],
+    "notes": "Needs immediate fetal monitoring."
+  }
+]
