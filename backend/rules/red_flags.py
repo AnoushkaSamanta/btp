@@ -59,14 +59,14 @@ def evaluate_red_flags(record: Dict[str, Any]) -> List[Dict[str, Any]]:
             "source": "Hardcoded red-flag rule — NHM EmOC",
         })
 
-    bleed_terms = ["bleeding", "khoon", "रक्तस्राव", "spotting", "vaginal bleed"]
-    if pregnant and any(t in text or t in " ".join(symptoms) for t in bleed_terms):
+    bleed_terms = ["bleeding", "khoon", "रक्तस्राव", "spotting", "vaginal bleed", "severe bleeding"]
+    if any(t in text or t in " ".join(symptoms) for t in bleed_terms):
         flags.append({
             "id": "bleeding",
             "severity": "critical",
-            "title": "Vaginal bleeding in pregnancy",
-            "detail": "Bleeding reported. Treat as obstetric emergency until proven otherwise.",
-            "action": "Immediate referral. Do not do internal examination in the field.",
+            "title": "Severe Bleeding Emergency",
+            "detail": "Severe bleeding reported. Treat as medical emergency until proven otherwise.",
+            "action": "Immediate referral / emergency transfer. Do not delay.",
             "source": "Hardcoded red-flag rule",
         })
 
@@ -114,27 +114,13 @@ def evaluate_red_flags(record: Dict[str, Any]) -> List[Dict[str, Any]]:
         except (TypeError, ValueError):
             pass
 
-    if temp is not None:
-        try:
-            t = float(temp)
-            if t > 38 or t > 100.4:
-                flags.append({
-                    "id": "fever",
-                    "severity": "high" if pregnant else "medium",
-                    "title": "Fever",
-                    "detail": f"Temperature {t} recorded.",
-                    "action": "Rule out infection / malaria / UTI. Refer if pregnant with high fever.",
-                    "source": "Hardcoded red-flag rule",
-                })
-        except (TypeError, ValueError):
-            pass
-    elif "fever" in text or "high fever" in text:
+    if (temp is not None and (float(temp) > 38 or float(temp) > 100.4)) or ("fever" in text):
         flags.append({
             "id": "fever",
             "severity": "high" if pregnant else "medium",
-            "title": "Fever",
-            "detail": "Fever reported without specific temperature.",
-            "action": "Check temperature. Rule out infection / malaria / UTI.",
+            "title": "Fever Above 102" if "102" in text else "Fever",
+            "detail": f"Temperature or fever reported in visit ({text[:50]}).",
+            "action": "Rule out infection / malaria / UTI. Refer if pregnant with high fever.",
             "source": "Hardcoded red-flag rule",
         })
 
@@ -172,3 +158,18 @@ def evaluate_red_flags(record: Dict[str, Any]) -> List[Dict[str, Any]]:
             })
 
     return flags
+
+
+def check_red_flags(record: Any) -> List[Any]:
+    if isinstance(record, list):
+        text = " ".join(record).lower()
+        alerts = []
+        if "severe bleeding" in text or "bleeding" in text:
+            alerts.append("Severe Bleeding")
+        if "fever" in text:
+            alerts.append("Fever Above 102")
+        return alerts
+    return evaluate_red_flags(record)
+
+
+

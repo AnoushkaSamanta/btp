@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 import pytest
 from backend.rag.embeddings import get_embedding_model, load_and_chunk_documents
 from backend.rag.retriever import ingest_documents_to_chroma, retrieve_guidelines, CHROMA_DB_DIR

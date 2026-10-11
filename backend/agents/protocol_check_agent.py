@@ -33,3 +33,35 @@ def check_protocols(record: Dict[str, Any], transcript: str) -> Dict[str, Any]:
         "summary": "\n".join(narrative),
         "needs_escalation": any(f.get("severity") == "critical" for f in flags),
     }
+
+
+class ProtocolCheckAgent:
+    def __init__(self, k_retrieval: int = 2):
+        self.k = k_retrieval
+
+    def analyze_record(self, record_obj: Any) -> Dict[str, Any]:
+        record_dict = record_obj.model_dump() if hasattr(record_obj, "model_dump") else (record_obj.dict() if hasattr(record_obj, "dict") else dict(record_obj))
+        flags = evaluate_red_flags(record_dict)
+
+        alerts = [f"{f['title']}: {f.get('detail', '')} {f.get('action', '')}" for f in flags]
+        requires_immediate = any(f.get("severity") == "critical" for f in flags) or any(f.get("action") for f in flags)
+
+        symptoms = record_dict.get("symptoms", [])
+        pregnancy = record_dict.get("pregnancy_status", False)
+        query_parts = []
+        if pregnancy:
+            query_parts.append("pregnant patient")
+        query_parts.extend(symptoms)
+        rag_query = " ".join(query_parts) if query_parts else "general wellness"
+
+        passages = retrieve(rag_query, k=self.k)
+        retrieved_protocols = [p[0]["text"] for p in passages if p]
+
+        return {
+            "requires_immediate_attention": requires_immediate,
+            "alerts": alerts,
+            "retrieved_protocols": retrieved_protocols,
+            "rag_query_used": rag_query,
+            "flags": flags,
+        }
+

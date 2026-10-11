@@ -1,8 +1,8 @@
 # Week 3 RAG & Red-Flag Evaluation Report
 
 ## Overall Metrics
-- **Average RAG Precision:** 31.67%
-- **Average RAG Recall:** 60.00%
+- **Average RAG Precision:** 0.00%
+- **Average RAG Recall:** 0.00%
 
 ## Detailed Case Analysis
 
@@ -11,8 +11,8 @@
 
 **RAG Retrieval:**
 - Expected: STG_HighRiskPregnancy.pdf, STG_Hypertension.pdf
-- Retrieved: STG_Hypertension.pdf, book-no-6.pdf, Skills That Save Lives ASHA Module-7 English.pdf
-- *Recall: 50% | Precision: 33%*
+- Retrieved: nhm_rmncha
+- *Recall: 0% | Precision: 0%*
 
 **Red-Flag Detection:**
 - Expected (Human logic): Severe headache, Blurred vision, Swelling in hands/face, High Blood Pressure (150/100)
@@ -26,8 +26,8 @@
 
 **RAG Retrieval:**
 - Expected: imnci_chart_booklet.pdf
-- Retrieved: imnci_chart_booklet.pdf, Skills That Save Lives ASHA Module-7 English.pdf
-- *Recall: 100% | Precision: 50%*
+- Retrieved: nhm_rmncha, schemes_notes, icmr_community
+- *Recall: 0% | Precision: 0%*
 
 **Red-Flag Detection:**
 - Expected (Human logic): Fast breathing (55 bpm)
@@ -41,8 +41,8 @@
 
 **RAG Retrieval:**
 - Expected: STG_HighRiskPregnancy.pdf, National_Antimicrobial_Guidelines.pdf
-- Retrieved: book-no-6.pdf, imnci_chart_booklet.pdf, Skills That Save Lives ASHA Module-7 English.pdf, STG_HighRiskPregnancy.pdf
-- *Recall: 50% | Precision: 25%*
+- Retrieved: schemes_notes, icmr_community, nhm_rmncha
+- *Recall: 0% | Precision: 0%*
 
 **Red-Flag Detection:**
 - Expected (Human logic): High fever, Lower abdominal pain, Foul-smelling discharge postpartum
@@ -56,8 +56,8 @@
 
 **RAG Retrieval:**
 - Expected: imnci_chart_booklet.pdf
-- Retrieved: imnci_chart_booklet.pdf, Skills That Save Lives ASHA Module-7 English.pdf
-- *Recall: 100% | Precision: 50%*
+- Retrieved: schemes_notes, icmr_community, nhm_rmncha
+- *Recall: 0% | Precision: 0%*
 
 **Red-Flag Detection:**
 - Expected (Human logic): Sunken eyes, Skin pinch goes back slowly, Irritable
@@ -71,7 +71,7 @@
 
 **RAG Retrieval:**
 - Expected: STG_HighRiskPregnancy.pdf
-- Retrieved: book-no-6.pdf, imnci_chart_booklet.pdf
+- Retrieved: schemes_notes, icmr_community, nhm_rmncha
 - *Recall: 0% | Precision: 0%*
 
 **Red-Flag Detection:**

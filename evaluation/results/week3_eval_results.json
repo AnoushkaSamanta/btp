@@ -1,7 +1,7 @@
 {
   "metrics": {
-    "avg_rag_precision": 0.31666666666666665,
-    "avg_rag_recall": 0.6
+    "avg_rag_precision": 0.0,
+    "avg_rag_recall": 0.0
   },
   "detailed_results": [
     {
@@ -12,12 +12,10 @@
         "STG_Hypertension.pdf"
       ],
       "retrieved_sources": [
-        "STG_Hypertension.pdf",
-        "book-no-6.pdf",
-        "Skills That Save Lives ASHA Module-7 English.pdf"
+        "nhm_rmncha"
       ],
-      "rag_recall": 0.5,
-      "rag_precision": 0.3333333333333333,
+      "rag_recall": 0.0,
+      "rag_precision": 0.0,
       "expected_red_flags": [
         "Severe headache",
         "Blurred vision",
@@ -45,11 +43,12 @@
         "imnci_chart_booklet.pdf"
       ],
       "retrieved_sources": [
-        "imnci_chart_booklet.pdf",
-        "Skills That Save Lives ASHA Module-7 English.pdf"
+        "nhm_rmncha",
+        "schemes_notes",
+        "icmr_community"
       ],
-      "rag_recall": 1.0,
-      "rag_precision": 0.5,
+      "rag_recall": 0.0,
+      "rag_precision": 0.0,
       "expected_red_flags": [
         "Fast breathing (55 bpm)"
       ],
@@ -70,13 +69,12 @@
         "National_Antimicrobial_Guidelines.pdf"
       ],
       "retrieved_sources": [
-        "book-no-6.pdf",
-        "imnci_chart_booklet.pdf",
-        "Skills That Save Lives ASHA Module-7 English.pdf",
-        "STG_HighRiskPregnancy.pdf"
+        "schemes_notes",
+        "icmr_community",
+        "nhm_rmncha"
       ],
-      "rag_recall": 0.5,
-      "rag_precision": 0.25,
+      "rag_recall": 0.0,
+      "rag_precision": 0.0,
       "expected_red_flags": [
         "High fever",
         "Lower abdominal pain",
@@ -101,11 +99,12 @@
         "imnci_chart_booklet.pdf"
       ],
       "retrieved_sources": [
-        "imnci_chart_booklet.pdf",
-        "Skills That Save Lives ASHA Module-7 English.pdf"
+        "schemes_notes",
+        "icmr_community",
+        "nhm_rmncha"
       ],
-      "rag_recall": 1.0,
-      "rag_precision": 0.5,
+      "rag_recall": 0.0,
+      "rag_precision": 0.0,
       "expected_red_flags": [
         "Sunken eyes",
         "Skin pinch goes back slowly",
@@ -127,8 +126,9 @@
         "STG_HighRiskPregnancy.pdf"
       ],
       "retrieved_sources": [
-        "book-no-6.pdf",
-        "imnci_chart_booklet.pdf"
+        "schemes_notes",
+        "icmr_community",
+        "nhm_rmncha"
       ],
       "rag_recall": 0.0,
       "rag_precision": 0.0,
