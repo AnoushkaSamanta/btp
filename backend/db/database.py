@@ -17,5 +17,14 @@ def init_db() -> None:
         refresh_demo_calendar(session)
 
 
-def get_session() -> Session:
-    return Session(engine)
+class SessionWrapper(Session):
+    def __iter__(self):
+        yield self
+
+    def __next__(self):
+        return self
+
+
+def get_session():
+    return SessionWrapper(engine)
+
