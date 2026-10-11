@@ -22,6 +22,7 @@ def _symptoms(text: str) -> list:
         ("swelling", ["swelling", "edema", "soojan", "सूजन", "swollen"]),
         ("headache", ["headache", "sir dard", "सिर दर्द"]),
         ("fever", ["fever", "bukhar", "बुखार"]),
+        ("severe bleeding", ["severe bleeding", "khoon beh raha", "heavy bleeding"]),
         ("bleeding", ["bleeding", "khoon", "रक्तस्राव", "spotting"]),
         ("vomiting", ["vomiting", "ulti", "उल्टी"]),
         ("fatigue", ["fatigue", "weakness", "kamzori", "कमजोरी"]),

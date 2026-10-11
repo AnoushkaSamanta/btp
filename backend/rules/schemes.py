@@ -126,7 +126,7 @@ def match_schemes(record: Dict[str, Any], patient: Optional[Dict[str, Any]] = No
         children_i = int(children_i) if children_i is not None else None
     except (TypeError, ValueError):
         children_i = None
-    first_child = _bool(ctx.get("first_living_child")) or children_i == 0 or ctx.get("para") == 0
+    first_child = _bool(ctx.get("first_living_child")) or children_i == 0 or ctx.get("para") == 0 or (children_i is None and ctx.get("para") is None)
     aadhaar = ctx.get("aadhaar_linked", True)
     enrolled = set(ctx.get("existing_schemes") or [])
 
