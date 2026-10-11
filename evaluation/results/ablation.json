@@ -1,13 +1,13 @@
 {
   "multi_agent": {
     "avg_extraction_f1": 0.7291,
-    "avg_scheme_accuracy": 0.3167,
+    "avg_scheme_accuracy": 0.5,
     "avg_citation_count": 4.0,
-    "avg_latency_s": 0.0007
+    "avg_latency_s": 0.0011
   },
   "single_agent": {
     "avg_extraction_f1": 0.7291,
-    "avg_scheme_accuracy": 0.3167,
+    "avg_scheme_accuracy": 0.5,
     "avg_citation_count": 0.0,
     "avg_latency_s": 0.0003
   },
@@ -22,15 +22,15 @@
       "transcript": "Visited Lakshmi Devi 24 years, 8 months pregnant, BP 140/90, swelling in feet, headache, BPL.",
       "multi_agent": {
         "f1_score": 1.0,
-        "scheme_accuracy": 0.6667,
+        "scheme_accuracy": 1.0,
         "citation_count": 4,
-        "latency_s": 0.002
+        "latency_s": 0.0033
       },
       "single_agent": {
         "f1_score": 1.0,
-        "scheme_accuracy": 0.6667,
+        "scheme_accuracy": 1.0,
         "citation_count": 0,
-        "latency_s": 0.0003
+        "latency_s": 0.0004
       }
     },
     {
@@ -40,13 +40,13 @@
         "f1_score": 1.0,
         "scheme_accuracy": 1.0,
         "citation_count": 4,
-        "latency_s": 0.0005
+        "latency_s": 0.001
       },
       "single_agent": {
         "f1_score": 1.0,
         "scheme_accuracy": 1.0,
         "citation_count": 0,
-        "latency_s": 0.0002
+        "latency_s": 0.0006
       }
     },
     {
@@ -56,7 +56,7 @@
         "f1_score": 0.4,
         "scheme_accuracy": 0.0,
         "citation_count": 4,
-        "latency_s": 0.0005
+        "latency_s": 0.0012
       },
       "single_agent": {
         "f1_score": 0.4,
@@ -72,7 +72,7 @@
         "f1_score": 0.8571,
         "scheme_accuracy": 0.0,
         "citation_count": 4,
-        "latency_s": 0.0006
+        "latency_s": 0.0008
       },
       "single_agent": {
         "f1_score": 0.8571,
@@ -88,13 +88,13 @@
         "f1_score": 0.6667,
         "scheme_accuracy": 0.5,
         "citation_count": 4,
-        "latency_s": 0.0006
+        "latency_s": 0.0008
       },
       "single_agent": {
         "f1_score": 0.6667,
         "scheme_accuracy": 0.5,
         "citation_count": 0,
-        "latency_s": 0.0002
+        "latency_s": 0.0003
       }
     },
     {
@@ -102,13 +102,13 @@
       "transcript": "Anita Devi 25 yrs, 4 months pregnant, BP 120/80, Hb 11.5, routine checkup normal.",
       "multi_agent": {
         "f1_score": 0.9231,
-        "scheme_accuracy": 0.0,
+        "scheme_accuracy": 1.0,
         "citation_count": 4,
-        "latency_s": 0.0005
+        "latency_s": 0.0007
       },
       "single_agent": {
         "f1_score": 0.9231,
-        "scheme_accuracy": 0.0,
+        "scheme_accuracy": 1.0,
         "citation_count": 0,
         "latency_s": 0.0003
       }
@@ -120,13 +120,13 @@
         "f1_score": 0.0,
         "scheme_accuracy": 0.0,
         "citation_count": 4,
-        "latency_s": 0.0004
+        "latency_s": 0.0007
       },
       "single_agent": {
         "f1_score": 0.0,
         "scheme_accuracy": 0.0,
         "citation_count": 0,
-        "latency_s": 0.0002
+        "latency_s": 0.0003
       }
     },
     {
@@ -134,15 +134,15 @@
       "transcript": "Rekha Devi 26 yrs, 5 months pregnant, severe weakness, Hb 6.5 g/dL, pale skin.",
       "multi_agent": {
         "f1_score": 0.8889,
-        "scheme_accuracy": 0.0,
+        "scheme_accuracy": 0.5,
         "citation_count": 4,
-        "latency_s": 0.0004
+        "latency_s": 0.0011
       },
       "single_agent": {
         "f1_score": 0.8889,
-        "scheme_accuracy": 0.0,
+        "scheme_accuracy": 0.5,
         "citation_count": 0,
-        "latency_s": 0.0002
+        "latency_s": 0.0004
       }
     },
     {
@@ -152,13 +152,13 @@
         "f1_score": 0.8889,
         "scheme_accuracy": 0.5,
         "citation_count": 4,
-        "latency_s": 0.0004
+        "latency_s": 0.0008
       },
       "single_agent": {
         "f1_score": 0.8889,
         "scheme_accuracy": 0.5,
         "citation_count": 0,
-        "latency_s": 0.0002
+        "latency_s": 0.0003
       }
     },
     {
@@ -168,7 +168,7 @@
         "f1_score": 0.6667,
         "scheme_accuracy": 0.5,
         "citation_count": 4,
-        "latency_s": 0.0008
+        "latency_s": 0.0007
       },
       "single_agent": {
         "f1_score": 0.6667,
