@@ -8,7 +8,7 @@ import os
 import logging
 import tempfile
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request, Body
@@ -20,6 +20,11 @@ from starlette.concurrency import run_in_threadpool
 logger = logging.getLogger(__name__)
 
 from backend.agents.protocol_check_agent import check_protocols
+from backend.agents.response_composer import (
+    compose_spoken_summary,
+    compose_structured_response,
+    parse_rag_results,
+)
 from backend.agents.qa import answer_worker_query
 from backend.agents.report_generator import generate_report
 from backend.agents.scheme_match_agent import match_household
@@ -246,7 +251,7 @@ def health_check():
             "/report-generate",
             "/full-pipeline",
         ],
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "service": "asha-backend",
         "worker_facing": True,
     }
@@ -280,19 +285,29 @@ def protocol_check_endpoint(req: ProtocolCheckRequest):
     try:
         if not record and symptoms:
             record = {"symptoms": symptoms, "visit_notes": " ".join(symptoms)}
+        elif not record and req.query:
+            record = {"symptoms": [], "visit_notes": req.query}
         transcript = record.get("visit_notes") or req.query or str(record)
         res = check_protocols(record, transcript)
-        citations = [f"{c['source']}: {c['text'][:300]}" for c in res.get("citations") or []]
-        flags = [{"flag": f.get("title"), "action": f.get("action"), "severity": f.get("severity")} for f in res.get("flags") or []]
-        string_flags = [f"{f.get('title')}: {f.get('action')}" for f in res.get("flags") or []]
+        parsed_rag = parse_rag_results(res)
+        citations = [f"{c['source']}: {c['excerpt']}" for c in parsed_rag["citations"]]
+        flags = [{"flag": f.get("title"), "action": f.get("action"), "severity": f.get("severity")} for f in (res.get("flags") or [])]
+        string_flags = [f"{f.get('title')}: {f.get('action')}" for f in (res.get("flags") or [])]
         return {
             "status": "success",
             "red_flags": string_flags,
             "flags": flags,
+            "critical_flags": parsed_rag["critical_flags"],
+            "warnings": parsed_rag["warnings"],
             "protocol_citations": citations,
             "guidelines": citations,
-            "needs_escalation": res.get("needs_escalation", False),
-            "summary": res.get("summary", ""),
+            "guideline_excerpts": parsed_rag["guideline_excerpts"],
+            "citations": parsed_rag["citations"],
+            "action_items": parsed_rag["action_items"],
+            "triage_urgency": parsed_rag["triage_urgency"],
+            "needs_escalation": parsed_rag["needs_escalation"],
+            "summary": parsed_rag["summary"],
+            "parsed_protocol": parsed_rag,
         }
     except Exception as exc:
         logger.exception("Protocol check failed")
@@ -620,6 +635,7 @@ def read_notification(notification_id: str):
 async def transcribe_audio(
     request: Request,
     file: Optional[UploadFile] = File(None),
+    audio: Optional[UploadFile] = File(None),
     language: Optional[str] = Form(None),
 ):
     content_type = request.headers.get("content-type", "")
@@ -632,36 +648,56 @@ async def transcribe_audio(
         if "application/json" in content_type:
             body = await request.json()
             audio_path = body.get("audio_path")
+            audio_base64 = body.get("audio_base64") or body.get("audio_data")
             lang_code = normalize_asr_language(body.get("language") or "hi")
-            if not audio_path or not os.path.exists(audio_path):
+
+            if audio_base64:
+                import base64
+                if "," in audio_base64:
+                    audio_base64 = audio_base64.split(",", 1)[1]
+                decoded_bytes = base64.b64decode(audio_base64)
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
+                    temp_file.write(decoded_bytes)
+                    temp_path = temp_file.name
+                try:
+                    pre = await run_in_threadpool(preprocess_audio, temp_path)
+                    preprocessed_path = pre
+                    target_path = pre
+                except Exception:
+                    target_path = temp_path
+            elif not audio_path or not os.path.exists(audio_path):
                 return {
                     "status": "error",
                     "error": f"Audio file not found: {audio_path}",
                     "transcript": "",
                     "confidence": None,
                     "model_used": "whisper-fallback",
+                    "language": lang_code,
                 }
-            target_path = audio_path
-        elif file:
-            lang_code = normalize_asr_language(language or "hi")
-            suffix = os.path.splitext(file.filename or "")[1] or ".webm"
-            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
-                content = await file.read(MAX_AUDIO_UPLOAD_BYTES + 1)
-                if len(content) > MAX_AUDIO_UPLOAD_BYTES:
-                    raise HTTPException(status_code=413, detail=f"Audio upload exceeds limit.")
-                if not content:
-                    raise HTTPException(status_code=400, detail="Audio file is empty.")
-                temp_file.write(content)
-                temp_path = temp_file.name
-
-            try:
-                pre = await run_in_threadpool(preprocess_audio, temp_path)
-                preprocessed_path = pre
-                target_path = pre
-            except Exception:
-                target_path = temp_path
+            else:
+                target_path = audio_path
         else:
-            raise HTTPException(status_code=400, detail="No audio file or path provided.")
+            upload = file or audio
+            if upload:
+                lang_code = normalize_asr_language(language or "hi")
+                suffix = os.path.splitext(upload.filename or "")[1] or ".webm"
+                with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+                    content = await upload.read(MAX_AUDIO_UPLOAD_BYTES + 1)
+                    if len(content) > MAX_AUDIO_UPLOAD_BYTES:
+                        raise HTTPException(status_code=413, detail="Audio upload exceeds limit.")
+                    if not content:
+                        raise HTTPException(status_code=400, detail="Audio file is empty.")
+                    temp_file.write(content)
+                    temp_path = temp_file.name
+
+                try:
+                    pre = await run_in_threadpool(preprocess_audio, temp_path)
+                    preprocessed_path = pre
+                    target_path = pre
+                except Exception:
+                    target_path = temp_path
+            else:
+                raise HTTPException(status_code=400, detail="No audio file or path provided.")
 
         res = await run_in_threadpool(transcribe_with_fallback, target_path, language=lang_code)
         if not res.get("transcript"):
@@ -671,7 +707,9 @@ async def transcribe_audio(
                 "transcript": res.get("transcript") or "Sample medical visit audio transcript.",
                 "confidence": res.get("confidence") or 0.85,
                 "model_used": res.get("model_used") or "whisper",
+                "language": lang_code,
             }
+        res["language"] = lang_code
         return res
     finally:
         if temp_path and os.path.exists(temp_path):

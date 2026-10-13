@@ -158,3 +158,120 @@ def test_compose_structured_response():
     assert "Distribute IFA tablets" in structured["action_plan"]["tasks"]
     assert len(structured["spoken_summary"]) > 0
     assert "ASHA" in structured["disclaimer"]
+
+
+# ==============================================================================
+# SECTION 2: ASR & Protocol Check API Endpoints Tests
+# ==============================================================================
+
+def test_transcribe_endpoint_json_missing_file():
+    """Verify POST /transcribe with nonexistent audio path returns graceful error."""
+    response = client.post(
+        "/transcribe",
+        json={"audio_path": "non_existent_audio_file.wav", "language": "hi"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "error"
+    assert "not found" in data["error"].lower()
+    assert data["transcript"] == ""
+    assert data["model_used"] == "whisper-fallback"
+
+
+def test_transcribe_endpoint_multipart_file():
+    """Verify POST /transcribe with file upload succeeds and returns valid metadata."""
+    dummy_wav = b"RIFF....WAVEfmt ...."
+    audio_stream = io.BytesIO(dummy_wav)
+    response = client.post(
+        "/transcribe",
+        files={"file": ("recording.wav", audio_stream, "audio/wav")},
+        data={"language": "en"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "transcript" in data
+    assert "confidence" in data
+    assert "model_used" in data
+    assert data["language"] == "en"
+
+
+def test_transcribe_endpoint_audio_alias():
+    """Verify POST /transcribe accepts 'audio' field name as well as 'file'."""
+    dummy_wav = b"RIFF....WAVEfmt ...."
+    audio_stream = io.BytesIO(dummy_wav)
+    response = client.post(
+        "/transcribe",
+        files={"audio": ("sample_visit.wav", audio_stream, "audio/wav")},
+        data={"language": "hi"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "transcript" in data
+
+
+def test_transcribe_endpoint_base64_payload():
+    """Verify POST /transcribe with audio_base64 string decodes and transcribes."""
+    import base64
+    dummy_wav = b"RIFF....WAVEfmt ...."
+    encoded = base64.b64encode(dummy_wav).decode("utf-8")
+    response = client.post(
+        "/transcribe",
+        json={"audio_base64": f"data:audio/wav;base64,{encoded}", "language": "hi"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "transcript" in data
+
+
+def test_transcribe_endpoint_empty_file_rejected():
+    """Verify POST /transcribe rejects empty audio files with HTTP 400."""
+    empty_stream = io.BytesIO(b"")
+    response = client.post(
+        "/transcribe",
+        files={"file": ("empty.wav", empty_stream, "audio/wav")},
+    )
+    assert response.status_code == 400
+    assert "empty" in response.json()["detail"].lower()
+
+
+def test_protocol_check_with_critical_symptoms():
+    """Verify POST /protocol-check detects severe symptoms, triggers escalation & parses RAG."""
+    payload = {
+        "symptoms": ["severe bleeding", "severe headache", "convulsions"],
+        "query": "Patient having severe bleeding and high BP 160/110 in 3rd trimester",
+    }
+    response = client.post("/protocol-check", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert data["needs_escalation"] is True
+    assert data["triage_urgency"] == "critical"
+    assert len(data["red_flags"]) >= 1
+    assert any("Severe Bleeding" in f for f in data["red_flags"])
+    assert len(data["critical_flags"]) >= 1
+    assert "guidelines" in data
+    assert "protocol_citations" in data
+    assert "parsed_protocol" in data
+
+
+def test_protocol_check_query_only():
+    """Verify POST /protocol-check works when providing only a guideline query."""
+    payload = {
+        "query": "management of gestational hypertension and preeclampsia"
+    }
+    response = client.post("/protocol-check", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "guidelines" in data
+    assert "summary" in data
+
+
+def test_protocol_check_empty_payload_rejected():
+    """Verify POST /protocol-check rejects completely empty payloads with HTTP 400."""
+    response = client.post("/protocol-check", json={})
+    assert response.status_code == 400
+
