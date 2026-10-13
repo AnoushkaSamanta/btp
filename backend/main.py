@@ -386,6 +386,11 @@ async def full_pipeline_endpoint(
             text = body.get("transcript") or ""
             lang = body.get("language") or "en"
             patient_record = body.get("patient_record")
+            audio_path = body.get("audio_path")
+            audio_base64 = body.get("audio_base64")
+            if not text and (audio_path or audio_base64):
+                res_asr = await transcribe_audio(request=request, language=lang)
+                text = res_asr.get("transcript") or ""
         except Exception:
             pass
 
@@ -411,19 +416,34 @@ async def full_pipeline_endpoint(
     if "ASHA VISIT REPORT" not in report_text:
         report_text = "=== ASHA VISIT REPORT ===\n" + report_text
 
+    structured_data = compose_structured_response(
+        record=rec,
+        protocol=prot,
+        schemes=sch,
+        report={"tasks": pipeline_res.get("tasks", []), "report": report_text},
+        language=lang,
+    )
+
     return {
         "status": "success",
         "transcript": text,
         "record": rec,
         "structured_record": rec,
         "red_flags": flags,
+        "critical_flags": structured_data["protocol_findings"]["critical_flags"],
+        "warnings": structured_data["protocol_findings"]["warnings"],
         "protocol_citations": citations,
+        "guidelines": citations,
         "eligible_schemes": eligible_schemes,
         "report": report_text,
         "tasks": tasks_list,
         "audio_response_url": "/api/tts",
-        "spoken_summary": pipeline_res.get("spoken_summary", ""),
+        "spoken_summary": structured_data["spoken_summary"] or pipeline_res.get("spoken_summary", ""),
+        "triage_urgency": structured_data["triage_urgency"],
+        "needs_escalation": structured_data["needs_escalation"],
+        "structured_response": structured_data,
         "draft_id": pipeline_res.get("draft_id"),
+        "worker_facing": True,
     }
 
 

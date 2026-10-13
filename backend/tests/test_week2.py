@@ -275,3 +275,72 @@ def test_protocol_check_empty_payload_rejected():
     response = client.post("/protocol-check", json={})
     assert response.status_code == 400
 
+
+# ==============================================================================
+# SECTION 3: Full Pipeline Integration Tests
+# ==============================================================================
+
+def test_full_pipeline_text_transcript_critical():
+    """Verify POST /full-pipeline processes clinical visit and outputs structured decision support."""
+    payload = {
+        "transcript": "Visited Sunita Devi 26 years pregnant 6 months with severe bleeding and blood pressure 160/110. BPL family, first child.",
+        "language": "en",
+    }
+    response = client.post("/full-pipeline", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert data["needs_escalation"] is True
+    assert data["triage_urgency"] == "critical"
+    assert "Sunita Devi" in data["record"]["patient_name"]
+    assert data["record"]["bp_status"] == "high"
+    assert len(data["red_flags"]) >= 1
+    assert "protocol_citations" in data
+    assert "PMMVY" in data["eligible_schemes"] or len(data["eligible_schemes"]) > 0
+    assert "ASHA VISIT REPORT" in data["report"]
+    assert len(data["tasks"]) > 0
+    assert "spoken_summary" in data
+    assert "structured_response" in data
+    assert data["structured_response"]["status"] == "success"
+    assert data["worker_facing"] is True
+
+
+def test_full_pipeline_audio_file_upload():
+    """Verify POST /full-pipeline accepts audio recording upload and executes full pipeline."""
+    dummy_wav = b"RIFF....WAVEfmt ...."
+    audio_stream = io.BytesIO(dummy_wav)
+    response = client.post(
+        "/full-pipeline",
+        files={"audio": ("visit_audio.wav", audio_stream, "audio/wav")},
+        data={"language": "en"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "transcript" in data
+    assert "record" in data
+    assert "report" in data
+    assert "spoken_summary" in data
+
+
+def test_full_pipeline_hindi_language_support():
+    """Verify POST /full-pipeline handles Hindi language configuration and produces Hindi summary."""
+    payload = {
+        "transcript": "Radha Devi 22 saal pregnant 7 mahina BP 140/90 swelling in feet and headache.",
+        "language": "hi",
+    }
+    response = client.post("/full-pipeline", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "spoken_summary" in data
+    assert "Maine note kiya" in data["spoken_summary"] or len(data["spoken_summary"]) > 0
+
+
+def test_full_pipeline_empty_request_rejected():
+    """Verify POST /full-pipeline rejects request without audio or transcript with HTTP 400."""
+    response = client.post("/full-pipeline", json={})
+    assert response.status_code == 400
+    assert "neither audio recording nor text transcript" in response.json()["detail"].lower()
+
+
