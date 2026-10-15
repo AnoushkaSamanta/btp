@@ -1,0 +1,9 @@
+{
+  "id": "visit_005",
+  "language": "ta-en",
+  "village": "Kalyanpur",
+  "patient_name": "Kavita Devi",
+  "reference": "Kavita Devi 48 years, fasting sugar 190 mg/dL, postprandial sugar 260 mg/dL, high sugar alert, advised lifestyle diet and metformin check.",
+  "hypothesis": "Kavita Devi 48 years, fasting sugar 190, postprandial sugar 260, high sugar, advised diet and doctor check.",
+  "audio_file": "evaluation/data/audio/visit_005.wav"
+}

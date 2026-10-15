@@ -63,6 +63,14 @@ export interface ResourceItem {
   icon: string;
   language: string;
   readTime: string;
+  pdfUrl?: string;
+  officialSource?: string;
+  officialUrl?: string;
+  officialPortal?: string;
+  linkTooltip?: string;
+  updatedDate?: string;
+  isNew?: boolean;
+  readMinutes?: number;
 }
 
 export interface DashboardStat {
@@ -75,30 +83,85 @@ export interface DashboardStat {
   color: string;
 }
 
+export interface SchemeDocRequirement {
+  type: string;
+  label: string;
+  description: string;
+  required: boolean;
+}
+
 export interface GovScheme {
   id: string;
   name: string;
   fullName: string;
   description: string;
-  category: 'maternal' | 'financial' | 'nutrition' | 'insurance';
-  benefits: string[];
-  eligibilityCriteria: string[];
-  documentsRequired: string[];
-  benefitAmount: string;
-  icon: string;
-  color: 'primary' | 'sky' | 'accent' | 'success';
-  officialDocUrl?: string;
-  officialWebsite?: string;
-  applicationSteps?: string[];
+  category: 'maternal' | 'financial' | 'nutrition' | 'insurance' | string;
+  benefit?: string;
+  benefitAmount?: number | string;
+  officialPdf?: string;
+  pdfFallback?: string;
+  portalUrl?: string;
+  portalFallback?: string;
+  formsUrl?: string;
+  offlinePdf?: string;
+  stateBenefits?: Record<string, string>;
+  eligibility?: string[];
+  documents?: SchemeDocRequirement[];
+  process?: string[];
+  whereToApply?: string;
+  processingTime?: string;
+  contact?: string;
+  benefits?: string[];
+  eligibilityCriteria?: string[];
+  documentsRequired?: string[];
+  icon?: string;
+  color?: string;
 }
 
 export interface SchemeEligibility {
   patientId: string;
+  patientName?: string;
+  village?: string;
   schemeId: string;
-  status: 'eligible' | 'enrolled' | 'pending-docs' | 'not-eligible';
+  status: 'eligible' | 'enrolled' | 'pending-docs' | 'not-eligible' | string;
   enrolledDate?: string;
   benefitReceived?: string;
   missingDocs?: string[];
+  eligibilityReasons?: string[];
+}
+
+export interface PatientUploadedDocument {
+  id: string | null;
+  type: string;
+  label: string;
+  description: string;
+  required: boolean;
+  status: 'pending' | 'uploaded' | 'verified' | 'rejected';
+  fileName?: string | null;
+  fileSize?: number | null;
+  uploadedAt?: string | null;
+  verifiedAt?: string | null;
+  notes?: string | null;
+}
+
+export interface PatientSchemeChecklist {
+  patientId: string;
+  schemeId: string;
+  documents: PatientUploadedDocument[];
+  progress: string;
+  progressPercent: number;
+  complete: boolean;
+}
+
+export interface MissingDocumentAlert {
+  patientId: string;
+  patientName: string;
+  village: string;
+  schemeId: string;
+  schemeName: string;
+  missingDoc: string;
+  missingCount: number;
+  missingList: string[];
 }
 
 export interface ImmunizationRecord {
@@ -113,6 +176,24 @@ export interface ImmunizationRecord {
   village: string;
 }
 
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  answer: number;
+  explanation: string;
+}
+
+export interface TrainingLesson {
+  id: number;
+  title: string;
+  videoUrl?: string;
+  videoId?: string;
+  content: string;
+  keyPoints?: string[];
+  clinicalActions?: string[];
+  quiz?: QuizQuestion[];
+}
+
 export interface TrainingModule {
   id: string;
   title: string;
@@ -124,6 +205,21 @@ export interface TrainingModule {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   icon: string;
   color: string;
+  officialSource?: string;
+  completedLessons?: number[];
+  quizPassed?: boolean;
+  quizScore?: number | null;
+}
+
+export interface CertificateRecord {
+  id: string;
+  workerId: string;
+  workerName: string;
+  moduleId: string;
+  moduleTitle: string;
+  score: number;
+  issuedDate: string;
+  certificateNumber: string;
 }
 
 export interface AppNotification {

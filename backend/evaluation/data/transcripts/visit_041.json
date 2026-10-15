@@ -1,0 +1,9 @@
+{
+  "id": "visit_041",
+  "language": "ta-en",
+  "village": "Ramnagar",
+  "patient_name": "Lakshmi Devi",
+  "reference": "Visited Lakshmi Devi 24 years, 8 months pregnant, BP 140/90, swelling in feet, headache, BPL card holder.",
+  "hypothesis": "Visited Lakshmi Devi 24 years, 8 month pregnant, BP 140 90, swelling in foot, headache, BPL card.",
+  "audio_file": "evaluation/data/audio/visit_041.wav"
+}

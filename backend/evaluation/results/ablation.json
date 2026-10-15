@@ -1,0 +1,103 @@
+{
+  "multi_agent": {
+    "avg_field_f1": 0.8314,
+    "avg_scheme_accuracy": 0.6667,
+    "avg_alert_accuracy": 0.96,
+    "citation_support_rate": 1.0,
+    "avg_latency_ms": 1.35
+  },
+  "single_agent_baseline": {
+    "avg_field_f1": 0.8314,
+    "avg_scheme_accuracy": 0.6667,
+    "avg_alert_accuracy": 0.96,
+    "citation_support_rate": 0.0,
+    "avg_latency_ms": 0.31
+  },
+  "sample_count": 5,
+  "cases_detailed": {
+    "multi_agent": [
+      {
+        "id": "case_1",
+        "field_f1": 1.0,
+        "scheme_accuracy": 0.6667,
+        "alert_accuracy": 1.0,
+        "citations_present": true,
+        "latency_ms": 4.04
+      },
+      {
+        "id": "case_2",
+        "field_f1": 1.0,
+        "scheme_accuracy": 0.6667,
+        "alert_accuracy": 1.0,
+        "citations_present": true,
+        "latency_ms": 0.5
+      },
+      {
+        "id": "case_3",
+        "field_f1": 0.8,
+        "scheme_accuracy": 1.0,
+        "alert_accuracy": 1.0,
+        "citations_present": true,
+        "latency_ms": 0.7
+      },
+      {
+        "id": "case_4",
+        "field_f1": 0.8571,
+        "scheme_accuracy": 1.0,
+        "alert_accuracy": 1.0,
+        "citations_present": true,
+        "latency_ms": 0.8
+      },
+      {
+        "id": "case_5",
+        "field_f1": 0.5,
+        "scheme_accuracy": 0.0,
+        "alert_accuracy": 0.8,
+        "citations_present": true,
+        "latency_ms": 0.71
+      }
+    ],
+    "single_agent": [
+      {
+        "id": "case_1",
+        "field_f1": 1.0,
+        "scheme_accuracy": 0.6667,
+        "alert_accuracy": 1.0,
+        "citations_present": false,
+        "latency_ms": 0.28
+      },
+      {
+        "id": "case_2",
+        "field_f1": 1.0,
+        "scheme_accuracy": 0.6667,
+        "alert_accuracy": 1.0,
+        "citations_present": false,
+        "latency_ms": 0.2
+      },
+      {
+        "id": "case_3",
+        "field_f1": 0.8,
+        "scheme_accuracy": 1.0,
+        "alert_accuracy": 1.0,
+        "citations_present": false,
+        "latency_ms": 0.41
+      },
+      {
+        "id": "case_4",
+        "field_f1": 0.8571,
+        "scheme_accuracy": 1.0,
+        "alert_accuracy": 1.0,
+        "citations_present": false,
+        "latency_ms": 0.39
+      },
+      {
+        "id": "case_5",
+        "field_f1": 0.5,
+        "scheme_accuracy": 0.0,
+        "alert_accuracy": 0.8,
+        "citations_present": false,
+        "latency_ms": 0.28
+      }
+    ]
+  }
+}

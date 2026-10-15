@@ -1,0 +1,9 @@
+{
+  "id": "visit_037",
+  "language": "hi-en",
+  "village": "Basantpur",
+  "patient_name": "Anjali Singh",
+  "reference": "High risk pregnancy check for Anjali Singh 31 years, 28 weeks gestation, sugar 165 mg/dL, mild hypertension BP 138/88, BPL.",
+  "hypothesis": "High risk pregnancy check Anjali Singh 31 years, 28 weeks, sugar 165, BP 138 88, BPL.",
+  "audio_file": "evaluation/data/audio/visit_037.wav"
+}

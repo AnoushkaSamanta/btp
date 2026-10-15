@@ -1,0 +1,9 @@
+{
+  "id": "visit_033",
+  "language": "te-en",
+  "village": "Chandpur",
+  "patient_name": "Meena Sharma",
+  "reference": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding established, no umbilical infection, no maternal fever.",
+  "hypothesis": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding start, no infection, no fever.",
+  "audio_file": "evaluation/data/audio/visit_033.wav"
+}

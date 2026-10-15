@@ -1,360 +1,518 @@
+/**
+ * Dashboard.tsx  –  ASHA-First Redesign
+ *
+ * Designed for rural ASHA workers with basic digital literacy.
+ * Principle: 30 seconds between visits. No technical jargon.
+ *
+ * Sections (scroll order):
+ *   1. Greeting Bar + Start button
+ *   2. Urgent Alerts (pre-eclampsia, missed vaccines, high BP)
+ *   3. Pending Confirmations notice
+ *   4. Today's Schedule (vertical timeline)
+ *   5. Today at a Glance (3 numbers)
+ *   6. Primary Actions (big buttons)
+ *
+ * Developer/researcher cards → AdvancedDashboard (hidden, via Settings → Advanced)
+ */
+
 import { useState, useEffect } from 'react';
-import { Users, CalendarCheck, AlertTriangle, Syringe, TrendingUp, TrendingDown, Minus, Clock, MapPin, CheckCircle2, CalendarClock, ArrowRight, Sparkles, Landmark, Award, ChevronRight, GraduationCap, Shield } from 'lucide-react';
-import { dashboardStats as seedStats, todayVisits as seedToday, getSchemeStats, immunizationRecords, trainingModules } from '@/data';
-import { fetchDashboard, fetchImmunizations, fetchPatients, healthCheck } from '@/lib/api';
-import type { ViewId, VisitStatus, Patient, ImmunizationRecord } from '@/types';
-
-function useCountUp(target: number, duration = 1000) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    let startTime: number | null = null;
-    let frame: number;
-    const animate = (ts: number) => {
-      if (startTime === null) startTime = ts;
-      const progress = Math.min((ts - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.round(eased * target));
-      if (progress < 1) frame = requestAnimationFrame(animate);
-    };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [target, duration]);
-  return count;
-}
-
-function FloatingOrb({ className, delay = 0 }: { className: string; delay?: number }) {
-  return (
-    <div
-      className={`absolute rounded-full blur-3xl pointer-events-none animate-float ${className}`}
-      style={{ animationDelay: `${delay}s` }}
-    />
-  );
-}
+import {
+  Mic,
+  Users,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  MapPin,
+  Phone,
+  Eye,
+  CalendarCheck,
+  ChevronRight,
+  Syringe,
+  Heart,
+  Activity,
+  BellRing,
+  ArrowRight,
+} from 'lucide-react';
+import {
+  dashboardStats as seedStats,
+  todayVisits as seedToday,
+} from '@/data';
+import {
+  fetchRedFlagAlerts,
+} from '@/lib/api';
+import {
+  usePatients,
+  useVisits,
+  useImmunizations,
+  useConfirmationLoop,
+} from '@/hooks';
+import { getPreferences } from '@/lib/preferences';
+import { t } from '@/lib/i18n';
+import type { ViewId, Patient, ImmunizationRecord, Visit } from '@/types';
 
 interface DashboardProps {
   onNavigate: (view: ViewId) => void;
+  onSelectPatient?: (patientId: string) => void;
 }
 
-const iconMap: Record<string, typeof Users> = {
-  Users,
-  CalendarCheck,
-  AlertTriangle,
-  Syringe,
-};
+// ─────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────
 
-const colorClasses: Record<string, { bg: string; text: string; ring: string; gradient: string; glow: string }> = {
-  primary: { bg: 'bg-primary-50', text: 'text-primary-600', ring: 'ring-primary-100/50', gradient: 'from-primary-400 to-primary-600', glow: 'shadow-glow-primary' },
-  sky: { bg: 'bg-sky-50', text: 'text-sky-600', ring: 'ring-sky-100/50', gradient: 'from-sky-400 to-sky-600', glow: 'shadow-glow-sky' },
-  accent: { bg: 'bg-accent-50', text: 'text-accent-600', ring: 'ring-accent-100/50', gradient: 'from-accent-400 to-accent-500', glow: 'shadow-glow-accent' },
-};
+function greetingWord(hour: number, lang: string): string {
+  const key = hour < 12 ? 'goodMorning' : hour < 17 ? 'goodAfternoon' : 'goodEvening';
+  return t(key, lang);
+}
 
-const statusConfig: Record<VisitStatus, { dot: string; label: string; bg: string; text: string }> = {
-  completed: { dot: 'bg-success-500', label: 'Completed', bg: 'bg-success-50', text: 'text-success-700' },
-  scheduled: { dot: 'bg-sky-500', label: 'Scheduled', bg: 'bg-sky-50', text: 'text-sky-700' },
-  missed: { dot: 'bg-error-500', label: 'Missed', bg: 'bg-error-50', text: 'text-error-700' },
-  pending: { dot: 'bg-accent-400', label: 'Pending', bg: 'bg-accent-50', text: 'text-accent-700' },
-};
+function dayLabel(): string {
+  return new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+}
 
-export function Dashboard({ onNavigate }: DashboardProps) {
-  const [dashboardStats, setDashboardStats] = useState(seedStats);
-  const [todayVisits, setTodayVisits] = useState(seedToday);
-  const [greetingDate, setGreetingDate] = useState('Today');
-  const [schemeStats, setSchemeStats] = useState(getSchemeStats());
-  const [priorityPatients, setPriorityPatients] = useState<Patient[]>([]);
-  const [dueImmunizations, setDueImmunizations] = useState(0);
-  const [connected, setConnected] = useState(false);
+// ─────────────────────────────────────────────
+// Sub-components (all inline for easy maintenance)
+// ─────────────────────────────────────────────
 
-  useEffect(() => {
-    fetchDashboard()
-      .then((data: {
-        stats?: typeof seedStats;
-        todayVisits?: typeof seedToday;
-        greetingDate?: string;
-        schemeStats?: typeof schemeStats;
-      }) => {
-        if (data.stats?.length) setDashboardStats(data.stats);
-        if (data.todayVisits) setTodayVisits(data.todayVisits);
-        if (data.greetingDate) setGreetingDate(data.greetingDate);
-        if (data.schemeStats) setSchemeStats(data.schemeStats);
-      })
-      .catch(() => undefined);
-    fetchPatients().then((rows) => setPriorityPatients((rows as Patient[]).filter((patient) => ['critical', 'high-risk'].includes(patient.status)))).catch(() => undefined);
-    fetchImmunizations().then((rows) => setDueImmunizations((rows as ImmunizationRecord[]).filter((row) => row.status === 'due' || row.status === 'overdue').length)).catch(() => undefined);
-    const check = () => healthCheck().then(setConnected).catch(() => setConnected(false));
-    void check();
-    const timer = window.setInterval(check, 15000);
-    return () => window.clearInterval(timer);
-  }, []);
+interface UrgentAlertCardProps {
+  name: string;
+  village: string;
+  reason: string;
+  severity: 'critical' | 'high';
+  onCall: () => void;
+  onView: () => void;
+}
 
-  const completedCount = todayVisits.filter((v) => v.status === 'completed').length;
-  const remainingVisits = todayVisits.filter((v) => v.status === 'scheduled' || v.status === 'pending');
-  const progress = todayVisits.length ? (completedCount / todayVisits.length) * 100 : 0;
-
-  const animStats = [
-    useCountUp(parseInt(String(dashboardStats[0]?.value ?? 0), 10) || 0),
-    useCountUp(parseInt(String(dashboardStats[1]?.value ?? 0), 10) || 0),
-    useCountUp(parseInt(String(dashboardStats[2]?.value ?? 0), 10) || 0),
-    useCountUp(parseInt(String(dashboardStats[3]?.value ?? 0), 10) || 0),
-  ];
-
+function UrgentAlertCard({ name, village, reason, severity, onCall, onView }: UrgentAlertCardProps) {
+  const isCritical = severity === 'critical';
   return (
-    <div className="space-y-6 animate-fade-in max-w-7xl mx-auto relative">
-      <FloatingOrb className="w-72 h-72 bg-primary-200/25 -top-16 -right-10" delay={0} />
-      <FloatingOrb className="w-64 h-64 bg-sky-200/20 top-60 -left-16" delay={2} />
-
-      {/* Hero greeting card */}
-      <div className="relative overflow-hidden rounded-3xl hero-gradient p-6 sm:p-8 shadow-xl shadow-primary-600/20">
-        <div className="absolute inset-0 gradient-mesh opacity-40" />
-        <FloatingOrb className="w-48 h-48 bg-white/10 -top-10 right-10" delay={1} />
-        <FloatingOrb className="w-36 h-36 bg-sky-400/15 bottom-0 left-1/3" delay={3} />
-
-        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-white text-xs font-semibold">
-                <Sparkles className="w-3.5 h-3.5" />
-                AI CoPilot Active
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success-400/20 backdrop-blur-sm text-success-200 text-xs font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-success-300 animate-pulse" />
-                {connected ? 'API Connected' : 'API Offline'}
-              </span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-white tracking-tight">Good morning, Rekha</h2>
-            <p className="text-primary-100 mt-1.5 text-sm sm:text-base">{greetingDate} — You have {remainingVisits.length} visits remaining today</p>
-          </div>
-          <button onClick={() => onNavigate('voice')} className="group inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white font-semibold text-sm transition-all border border-white/20 hover:border-white/30 active:scale-95">
-            <Mic className="w-4 h-4" />
-            Ask CoPilot
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-          </button>
+    <div
+      className={`rounded-2xl border-2 p-4 flex flex-col gap-3 ${
+        isCritical
+          ? 'bg-red-50 border-red-300 dark:bg-red-950/40 dark:border-red-700'
+          : 'bg-amber-50 border-amber-300 dark:bg-amber-950/30 dark:border-amber-600'
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+            isCritical ? 'bg-red-100 dark:bg-red-900/60' : 'bg-amber-100 dark:bg-amber-900/40'
+          }`}
+        >
+          <AlertTriangle className={`w-5 h-5 ${isCritical ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight">{name}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+            <MapPin className="w-3.5 h-3.5 shrink-0" />
+            {village}
+          </p>
+          <p
+            className={`text-sm font-semibold mt-1 ${
+              isCritical ? 'text-red-700 dark:text-red-400' : 'text-amber-700 dark:text-amber-400'
+            }`}
+          >
+            {reason}
+          </p>
         </div>
       </div>
-
-      {/* Stats grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {dashboardStats.map((stat, i) => {
-          const Icon = iconMap[stat.icon];
-          const colors = colorClasses[stat.color];
-          const TrendIcon = stat.trend === 'up' ? TrendingUp : stat.trend === 'down' ? TrendingDown : Minus;
-          return (
-            <div
-              key={stat.id}
-              className="glass-card card-hover p-5 animate-slide-up group relative overflow-hidden"
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              <div className="flex items-start justify-between">
-                <div className={`relative w-12 h-12 rounded-2xl ${colors.bg} flex items-center justify-center ring-4 ${colors.ring}`}>
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${colors.gradient} opacity-0 hover:opacity-100 transition-opacity`} />
-                  <Icon className={`w-5 h-5 ${colors.text} relative`} />
-                </div>
-                <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-lg ${stat.trend === 'up' ? 'bg-success-50 text-success-600' : stat.trend === 'down' ? 'bg-accent-50 text-accent-600' : 'bg-slate-100 text-slate-400'}`}>
-                  <TrendIcon className="w-3 h-3" />
-                  {stat.change}
-                </div>
-              </div>
-              <p className="text-3xl font-display font-extrabold text-slate-900 mt-4 tracking-tight tabular-nums">{animStats[i]}</p>
-              <p className="text-sm text-slate-500 mt-1 font-medium">{stat.label}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Scheme eligibility banner */}
-      {(() => {
-        const s = schemeStats;
-        const totalActive = s.enrolled + s.eligible;
-        const enrollPct = totalActive > 0 ? Math.round((s.enrolled / totalActive) * 100) : 0;
-        return (
-          <button onClick={() => onNavigate('schemes')} className="group w-full relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-50 via-primary-50/50 to-sky-50/50 border border-primary-100 p-4 flex items-center gap-4 hover:shadow-md transition-all text-left">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-md shadow-primary-500/20 shrink-0">
-              <Landmark className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-display font-bold text-slate-800 text-sm">Scheme Eligibility</h3>
-                <span className="stat-badge bg-success-100 text-success-700">
-                  <CheckCircle2 className="w-3 h-3" />
-                  {s.enrolled} enrolled
-                </span>
-                <span className="stat-badge bg-primary-100 text-primary-700">
-                  <Award className="w-3 h-3" />
-                  {s.eligible} eligible
-                </span>
-                {s.pending > 0 && (
-                  <span className="stat-badge bg-accent-100 text-accent-700">
-                    {s.pending} pending docs
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-2 bg-slate-200/60 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-primary-400 to-primary-600 rounded-full transition-all duration-700" style={{ width: `${enrollPct}%` }} />
-                </div>
-                <span className="text-xs font-bold text-primary-600 shrink-0">{enrollPct}% enrolled</span>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all shrink-0" />
-          </button>
-        );
-      })()}
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Today's schedule */}
-        <div className="lg:col-span-2 glass-card p-6 group">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h3 className="font-display font-bold text-slate-900 text-lg">Today's Schedule</h3>
-              <p className="text-sm text-slate-500 mt-0.5">{completedCount} of {todayVisits.length} visits completed</p>
-            </div>
-            <button onClick={() => onNavigate('schedule')} className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1 group">
-              View all
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </button>
-          </div>
-
-          <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mb-6">
-            <div className="h-full bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 rounded-full transition-all duration-700 shadow-sm" style={{ width: `${progress}%` }} />
-          </div>
-
-          <div className="space-y-2">
-            {todayVisits.slice(0, 5).map((visit, i) => {
-              const status = statusConfig[visit.status];
-              return (
-                <button
-                  type="button"
-                  key={visit.id}
-                  onClick={() => onNavigate('schedule')}
-                  className="w-full text-left flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors group animate-slide-up"
-                  style={{ animationDelay: `${i * 40}ms` }}
-                >
-                  <div className="flex flex-col items-center justify-center w-14 shrink-0">
-                    <span className="text-sm font-bold text-slate-700">{visit.time}</span>
-                    <span className={`w-2 h-2 rounded-full mt-1.5 ${status.dot}`} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-800 text-sm">{visit.patientName}</p>
-                    <p className="text-xs text-slate-500 truncate">{visit.type}</p>
-                  </div>
-                  <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 shrink-0">
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span>{visit.village}</span>
-                  </div>
-                  <span className={`stat-badge ${status.bg} ${status.text} shrink-0`}>
-                    {status.label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Right column */}
-        <div className="space-y-6">
-          {/* Priority Alerts */}
-          <div className="glass-card p-6 group">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-400 to-accent-500 flex items-center justify-center shadow-md shadow-accent-500/20">
-                <AlertTriangle className="w-5 h-5 text-white" />
-              </div>
-              <h3 className="font-display font-bold text-slate-900">Priority Alerts</h3>
-            </div>
-            <div className="space-y-3">
-              {priorityPatients.slice(0, 3).map((patient) => <button type="button" key={patient.id} onClick={() => onNavigate('patients')} className="w-full text-left p-3.5 rounded-2xl bg-gradient-to-r from-accent-50 to-accent-50/30 border border-accent-100 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-2 mb-1"><span className={`w-2 h-2 rounded-full ${patient.status === 'critical' ? 'bg-error-500 animate-pulse' : 'bg-accent-500'}`} /><p className="text-sm font-bold text-slate-800">{patient.name} · {patient.status === 'critical' ? 'Critical' : 'High Risk'}</p></div>
-                <p className="text-xs text-slate-600 leading-relaxed">{[patient.bp && `BP ${patient.bp}`, ...(patient.riskFactors || [])].filter(Boolean).join(' · ') || 'Open record to review details.'}</p>
-              </button>)}
-              {priorityPatients.length === 0 && <p className="text-sm text-slate-500">No priority patient records are available.</p>}
-              <button type="button" onClick={() => onNavigate('immunization')} className="w-full text-left p-3.5 rounded-2xl bg-gradient-to-r from-sky-50 to-sky-50/30 border border-sky-100 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-2 mb-1"><span className="w-2 h-2 rounded-full bg-sky-500" /><p className="text-sm font-bold text-sky-800">{dueImmunizations} Immunizations Due</p></div>
-                <p className="text-xs text-sky-600 leading-relaxed">Due and overdue records in the immunization tracker.</p>
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="glass-card p-6 group">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-md shadow-primary-500/20">
-                <CalendarClock className="w-5 h-5 text-white" />
-              </div>
-              <h3 className="font-display font-bold text-slate-900">Quick Actions</h3>
-            </div>
-            <div className="space-y-2">
-              <button onClick={() => onNavigate('voice')} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-primary-50 transition-colors text-left group">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <CheckCircle2 className="w-4 h-4 text-primary-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-700">Ask CoPilot</p>
-                  <p className="text-xs text-slate-400">Voice or text guidance</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all" />
-              </button>
-              <button onClick={() => onNavigate('patients')} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-sky-50 transition-colors text-left group">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-100 to-sky-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Users className="w-4 h-4 text-sky-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-700">View Patients</p>
-                  <p className="text-xs text-slate-400">Live household registry</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-sky-500 group-hover:translate-x-0.5 transition-all" />
-              </button>
-              <button onClick={() => onNavigate('schedule')} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-accent-50 transition-colors text-left group">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent-100 to-accent-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Clock className="w-4 h-4 text-accent-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-700">Upcoming Visits</p>
-                  <p className="text-xs text-slate-400">{remainingVisits.length} remaining today</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-accent-500 group-hover:translate-x-0.5 transition-all" />
-              </button>
-              <button onClick={() => onNavigate('schemes')} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-success-50 transition-colors text-left group">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-success-100 to-success-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Landmark className="w-4 h-4 text-success-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-700">Gov Schemes</p>
-                  <p className="text-xs text-slate-400">Check patient eligibility</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-success-500 group-hover:translate-x-0.5 transition-all" />
-              </button>
-              <button onClick={() => onNavigate('immunization')} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-sky-50 transition-colors text-left group">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-100 to-sky-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Shield className="w-4 h-4 text-sky-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-700">Immunization</p>
-                  <p className="text-xs text-slate-400">{immunizationRecords.filter((r) => r.status === 'overdue' || r.status === 'due').length} due now</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-sky-500 group-hover:translate-x-0.5 transition-all" />
-              </button>
-              <button onClick={() => onNavigate('training')} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-primary-50 transition-colors text-left group">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <GraduationCap className="w-4 h-4 text-primary-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-700">Training Center</p>
-                  <p className="text-xs text-slate-400">{trainingModules.filter((m) => m.progress > 0 && m.progress < 100).length} in progress</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all" />
-              </button>
-            </div>
-          </div>
-        </div>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={onCall}
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors min-h-[48px]"
+        >
+          <Phone className="w-4 h-4" />
+          Call PHC
+        </button>
+        <button
+          type="button"
+          onClick={onView}
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors min-h-[48px]"
+        >
+          <Eye className="w-4 h-4" />
+          View
+        </button>
       </div>
     </div>
   );
 }
 
-function Mic({ className }: { className?: string }) {
+// ─────────────────────────────────────────────
+// Schedule timeline item
+// ─────────────────────────────────────────────
+
+interface ScheduleItemProps {
+  time: string;
+  name: string;
+  village: string;
+  type: string;
+  status: 'completed' | 'scheduled' | 'missed' | 'pending';
+  isNext: boolean;
+  onClick: () => void;
+}
+
+function ScheduleItem({ time, name, village, type, status, isNext, onClick }: ScheduleItemProps) {
+  const isCompleted = status === 'completed';
+  const isMissed = status === 'missed';
+
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2a3 3 0 0 0 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 0 3-3z" />
-      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-      <line x1="12" y1="19" x2="12" y2="22" />
-    </svg>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full text-left flex items-start gap-4 p-4 rounded-2xl border-2 transition-all min-h-[72px] ${
+        isNext
+          ? 'bg-primary-50 border-primary-400 dark:bg-primary-950/40 dark:border-primary-500 shadow-md shadow-primary-100 dark:shadow-none'
+          : isCompleted
+          ? 'bg-white dark:bg-slate-900 border-green-200 dark:border-green-800/60 opacity-70'
+          : isMissed
+          ? 'bg-white dark:bg-slate-900 border-red-200 dark:border-red-800/60'
+          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-primary-300 dark:hover:border-primary-700'
+      }`}
+    >
+      {/* Time column */}
+      <div className="flex flex-col items-center pt-0.5 w-14 shrink-0">
+        <span className="text-base font-bold text-slate-700 dark:text-slate-200">{time}</span>
+        <div
+          className={`w-3 h-3 rounded-full mt-1.5 ${
+            isCompleted
+              ? 'bg-green-500'
+              : isMissed
+              ? 'bg-red-500'
+              : isNext
+              ? 'bg-primary-500 animate-pulse ring-4 ring-primary-200 dark:ring-primary-900'
+              : 'bg-slate-300 dark:bg-slate-600'
+          }`}
+        />
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <p className="text-[17px] font-bold text-slate-900 dark:text-slate-100 leading-tight">{name}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+          <MapPin className="w-3.5 h-3.5 shrink-0" />
+          {village}
+        </p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{type}</p>
+      </div>
+
+      {/* Status badge */}
+      <div className="shrink-0 flex flex-col items-end gap-1">
+        {isCompleted && (
+          <span className="flex items-center gap-1 text-xs font-semibold text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2.5 py-1 rounded-full">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            Done
+          </span>
+        )}
+        {isMissed && (
+          <span className="text-xs font-semibold text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/40 px-2.5 py-1 rounded-full">
+            Missed
+          </span>
+        )}
+        {isNext && (
+          <span className="flex items-center gap-1 text-xs font-bold text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/60 px-2.5 py-1 rounded-full animate-pulse">
+            <Clock className="w-3.5 h-3.5" />
+            Next
+          </span>
+        )}
+        {!isCompleted && !isMissed && !isNext && (
+          <span className="text-xs text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
+            Upcoming
+          </span>
+        )}
+        <ChevronRight className="w-4 h-4 text-slate-400 mt-1" />
+      </div>
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Main Dashboard Component
+// ─────────────────────────────────────────────
+
+export function Dashboard({ onNavigate, onSelectPatient }: DashboardProps) {
+  const [urgentAlerts, setUrgentAlerts] = useState<
+    { name: string; village: string; reason: string; severity: 'critical' | 'high'; patientId?: string }[]
+  >([]);
+  const [prefs, setPrefs] = useState(() => getPreferences());
+
+  // ── TanStack Query data ────────────────────────────────────────────────
+  const { data: patientsData } = usePatients();
+  const { data: visitsData } = useVisits();
+  const { data: immunizationsData } = useImmunizations();
+  const { data: confirmationData } = useConfirmationLoop();
+
+  const todayVisits: Visit[] = (visitsData ?? seedToday) as Visit[];
+  const dueImmunizations = ((immunizationsData ?? []) as ImmunizationRecord[]).filter(
+    (r) => r.status === 'due' || r.status === 'overdue'
+  ).length;
+  const pendingConfirmations = Number(
+    (confirmationData as any)?.pendingCount ??
+    (confirmationData as any)?.pending ??
+    (Array.isArray(confirmationData) ? confirmationData.length : 0)
+  ) || 0;
+
+  useEffect(() => {
+    const handle = () => setPrefs(getPreferences());
+    window.addEventListener('asha-preferences-changed', handle);
+    return () => window.removeEventListener('asha-preferences-changed', handle);
+  }, []);
+
+  // Derive urgent alerts from patient data via TanStack Query result
+  useEffect(() => {
+    if (!patientsData) return;
+    const critical = (patientsData as Patient[])
+      .filter((p) => p.status === 'critical' || p.status === 'high-risk')
+      .slice(0, 3)
+      .map((p) => ({
+        name: p.name,
+        village: p.village,
+        reason: p.riskFactors?.[0] ?? (p.bp && p.bp !== '120/80' ? `BP ${p.bp}` : 'High-risk pregnancy'),
+        severity: (p.status === 'critical' ? 'critical' : 'high') as 'critical' | 'high',
+        patientId: p.id,
+      }));
+    setUrgentAlerts(critical);
+  }, [patientsData]);
+
+  // Also try fetching red-flag alerts from backend for richer reasons
+  useEffect(() => {
+    fetchRedFlagAlerts()
+      .then((data: any) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.slice(0, 3).map((r: any) => ({
+            name: r.patientName ?? r.name ?? 'Patient',
+            village: r.village ?? '',
+            reason: r.reason ?? r.flag ?? 'Urgent follow-up',
+            severity: (r.severity === 'critical' ? 'critical' : 'high') as 'critical' | 'high',
+            patientId: r.patientId,
+          }));
+          setUrgentAlerts(mapped);
+        }
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const completedCount = todayVisits.filter((v) => v.status === 'completed').length;
+  const remainingCount = todayVisits.filter(
+    (v) => v.status === 'scheduled' || v.status === 'pending'
+  ).length;
+
+  // The "next" visit is the first non-completed, non-missed one
+  const nextVisitIndex = todayVisits.findIndex(
+    (v) => v.status === 'scheduled' || v.status === 'pending'
+  );
+
+  const hour = new Date().getHours();
+  const greeting = greetingWord(hour, prefs.language);
+  const firstName = prefs.workerName.split(' ')[0] || 'ASHA';
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-5 pb-28 animate-fade-in">
+
+      {/* ── 1. GREETING BAR ── */}
+      <div className="bg-gradient-to-r from-primary-600 to-primary-700 dark:from-primary-800 dark:to-primary-900 rounded-2xl p-5 flex items-center justify-between shadow-lg shadow-primary-500/20">
+        <div>
+          <h2 className="text-2xl font-display font-extrabold text-white leading-tight">
+            {greeting}, {firstName} 👋
+          </h2>
+          <p className="text-primary-100 text-sm mt-1 font-medium">
+            {dayLabel()} · {remainingCount} {remainingCount === 1 ? 'visit' : 'visits'} remaining
+          </p>
+        </div>
+        <button
+          type="button"
+          id="dashboard-start-voice"
+          onClick={() => onNavigate('voice')}
+          className="flex items-center gap-2 bg-white text-primary-700 font-bold px-4 py-3 rounded-xl shadow-md hover:bg-primary-50 transition-all text-sm min-h-[48px] shrink-0"
+        >
+          <Mic className="w-5 h-5" />
+          Start
+        </button>
+      </div>
+
+      {/* ── 2. URGENT ALERTS ── */}
+      {urgentAlerts.length > 0 && (
+        <section aria-label="Urgent alerts">
+          <div className="flex items-center gap-2 mb-3">
+            <BellRing className="w-5 h-5 text-red-500 animate-pulse" />
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              Urgent Alerts
+            </h3>
+            <span className="ml-auto px-2.5 py-0.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 text-sm font-bold">
+              {urgentAlerts.length}
+            </span>
+          </div>
+          <div className="space-y-3">
+            {urgentAlerts.map((alert, i) => (
+              <UrgentAlertCard
+                key={i}
+                name={alert.name}
+                village={alert.village}
+                reason={alert.reason}
+                severity={alert.severity}
+                onCall={() => window.open('tel:108', '_self')}
+                onView={() => {
+                  if (alert.patientId && onSelectPatient) {
+                    onSelectPatient(alert.patientId);
+                  } else {
+                    onNavigate('patients');
+                  }
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ── 3. PENDING CONFIRMATIONS ── */}
+      {pendingConfirmations > 0 && (
+        <div className="bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-700 rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/60 flex items-center justify-center shrink-0">
+            <CalendarCheck className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-base font-bold text-amber-900 dark:text-amber-200">
+              {pendingConfirmations} {pendingConfirmations === 1 ? 'visit needs' : 'visits need'} voice confirmation
+            </p>
+            <p className="text-sm text-amber-700 dark:text-amber-400">Review before submitting to PHC</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onNavigate('voice')}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors min-h-[48px] shrink-0"
+          >
+            Review
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* ── 4. TODAY'S SCHEDULE ── */}
+      <section aria-label="Today's schedule">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Today's Visits</h3>
+          <button
+            type="button"
+            onClick={() => onNavigate('schedule')}
+            className="text-sm font-semibold text-primary-600 dark:text-primary-400 flex items-center gap-1 hover:underline"
+          >
+            See all <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Progress bar */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-700"
+              style={{ width: todayVisits.length ? `${(completedCount / todayVisits.length) * 100}%` : '0%' }}
+            />
+          </div>
+          <span className="text-sm font-bold text-slate-700 dark:text-slate-300 tabular-nums">
+            {completedCount}/{todayVisits.length}
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          {todayVisits.length === 0 && (
+            <div className="text-center py-10 text-slate-400 dark:text-slate-500">
+              <CalendarCheck className="w-12 h-12 mx-auto mb-3 opacity-40" />
+              <p className="text-base font-medium">No visits scheduled today</p>
+            </div>
+          )}
+          {todayVisits.map((visit, i) => (
+            <ScheduleItem
+              key={visit.id}
+              time={visit.time}
+              name={visit.patientName}
+              village={visit.village}
+              type={visit.type}
+              status={visit.status}
+              isNext={i === nextVisitIndex}
+              onClick={() => {
+                if (visit.patientId && onSelectPatient) {
+                  onSelectPatient(visit.patientId);
+                } else {
+                  onNavigate('schedule');
+                }
+              }}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* ── 5. TODAY AT A GLANCE ── */}
+      <section aria-label="Today at a glance">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3">Today at a Glance</h3>
+        <div className="grid grid-cols-3 gap-3">
+          <GlanceCard
+            icon={<CalendarCheck className="w-6 h-6 text-primary-600 dark:text-primary-400" />}
+            value={`${completedCount}/${todayVisits.length}`}
+            label="Visits"
+            bg="bg-primary-50 dark:bg-primary-950/40 border-primary-200 dark:border-primary-800"
+          />
+          <GlanceCard
+            icon={<AlertTriangle className="w-6 h-6 text-red-500 dark:text-red-400" />}
+            value={String(urgentAlerts.length)}
+            label="Alerts"
+            bg="bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800"
+          />
+          <GlanceCard
+            icon={<Syringe className="w-6 h-6 text-violet-600 dark:text-violet-400" />}
+            value={String(dueImmunizations)}
+            label="Vaccines Due"
+            bg="bg-violet-50 dark:bg-violet-950/30 border-violet-200 dark:border-violet-800"
+          />
+        </div>
+      </section>
+
+      {/* ── 6. PRIMARY ACTIONS ── */}
+      <section aria-label="Primary actions">
+        <div className="flex flex-col gap-3">
+          <button
+            type="button"
+            id="dashboard-document-visit"
+            onClick={() => onNavigate('voice')}
+            className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-bold text-lg rounded-2xl shadow-lg shadow-primary-500/25 transition-all min-h-[64px] px-6"
+          >
+            <Mic className="w-6 h-6" />
+            🎤 Document Visit
+          </button>
+          <button
+            type="button"
+            id="dashboard-all-patients"
+            onClick={() => onNavigate('patients')}
+            className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-bold text-lg rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all min-h-[64px] px-6"
+          >
+            <Users className="w-6 h-6" />
+            📋 All Patients
+          </button>
+        </div>
+      </section>
+
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Glance card
+// ─────────────────────────────────────────────
+function GlanceCard({
+  icon,
+  value,
+  label,
+  bg,
+}: {
+  icon: React.ReactNode;
+  value: string;
+  label: string;
+  bg: string;
+}) {
+  return (
+    <div className={`rounded-2xl border-2 p-4 flex flex-col items-center gap-2 ${bg}`}>
+      {icon}
+      <p className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tabular-nums leading-none">
+        {value}
+      </p>
+      <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 text-center">{label}</p>
+    </div>
   );
 }

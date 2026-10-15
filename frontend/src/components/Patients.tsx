@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Search, Filter, Phone, MapPin, Calendar, Droplet, Activity, AlertCircle, ChevronRight, X, Award, CheckCircle2, Sparkles } from 'lucide-react';
+import { Search, Filter, Phone, MapPin, Calendar, Droplet, Activity, AlertCircle, ChevronRight, X, Award, CheckCircle2, Sparkles, Download } from 'lucide-react';
 import { patients as seedPatients, govSchemes as seedSchemes, schemeEligibility as seedElig } from '@/data';
-import { createPatient, fetchPatients, fetchSchemes, scheduleVisit } from '@/lib/api';
+import { scheduleVisit } from '@/lib/api';
+import { usePatients, useSchemes, useCreatePatient } from '@/hooks';
+import { queryClient } from '@/lib/queryClient';
+import { QK } from '@/lib/queryKeys';
+import { downloadClinicalPdf } from '@/lib/download';
 import type { Patient, PatientStatus, SchemeEligibility, GovScheme } from '@/types';
+import { PatientDocuments } from './PatientDocuments';
+import { PatientDetail } from './PatientDetail';
 
 function FloatingOrb({ className, delay = 0 }: { className: string; delay?: number }) {
   return (
@@ -20,29 +26,38 @@ const statusConfig: Record<PatientStatus, { label: string; bg: string; text: str
   routine: { label: 'Routine', bg: 'bg-slate-100', text: 'text-slate-600', dot: 'bg-slate-400', gradient: 'from-slate-400 to-slate-500' },
 };
 
-export function Patients({ initialSearch = '' }: { initialSearch?: string }) {
-  const [patients, setPatients] = useState<Patient[]>(seedPatients);
+export function Patients({
+  initialSearch = '',
+  initialPatientId = '',
+}: {
+  initialSearch?: string;
+  initialPatientId?: string;
+}) {
   const [search, setSearch] = useState(initialSearch);
   const [filter, setFilter] = useState<'all' | PatientStatus>('all');
   const [selected, setSelected] = useState<Patient | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
-  const [eligibility, setEligibility] = useState<SchemeEligibility[]>(seedElig);
-  const [schemes, setSchemes] = useState<GovScheme[]>(seedSchemes);
+
+  // ── TanStack Query ─────────────────────────────────────────────────────
+  const { data: patientsRaw, isLoading: loading } = usePatients();
+  const { data: schemesRaw } = useSchemes();
+  const createPatientMutation = useCreatePatient();
+
+  const patients: Patient[] = (patientsRaw && patientsRaw.length > 0 ? patientsRaw : seedPatients) as Patient[];
+  const schemesData = schemesRaw as { schemes?: GovScheme[]; eligibility?: SchemeEligibility[] } | undefined;
+  const eligibility: SchemeEligibility[] = schemesData?.eligibility ?? seedElig;
+  const schemes: GovScheme[] = schemesData?.schemes?.length ? schemesData.schemes as GovScheme[] : seedSchemes;
 
   useEffect(() => setSearch(initialSearch), [initialSearch]);
 
+  // Auto-select patient by ID once data is ready
   useEffect(() => {
-    fetchPatients()
-      .then((rows) => setPatients(rows as Patient[]))
-      .catch(() => undefined);
-    fetchSchemes()
-      .then((data: { eligibility?: SchemeEligibility[]; schemes?: GovScheme[] }) => {
-        if (data.eligibility) setEligibility(data.eligibility);
-        if (data.schemes?.length) setSchemes(data.schemes);
-      })
-      .catch(() => undefined);
-  }, []);
+    if (initialPatientId && patients.length > 0) {
+      const match = patients.find((p) => p.id === initialPatientId);
+      if (match) setSelected(match);
+    }
+  }, [initialPatientId, patients]);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -145,8 +160,12 @@ export function Patients({ initialSearch = '' }: { initialSearch?: string }) {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${status.gradient} flex items-center justify-center text-lg font-display font-bold text-white shadow-md`}>
-                    {patient.name.charAt(0)}
+                  <div className={`w-12 h-12 rounded-2xl overflow-hidden bg-gradient-to-br ${status.gradient} flex items-center justify-center text-lg font-display font-bold text-white shadow-md border border-white/40`}>
+                    {patient.photoUrl ? (
+                      <img src={patient.photoUrl} alt={patient.name} className="w-full h-full object-cover" />
+                    ) : (
+                      patient.name.charAt(0)
+                    )}
                   </div>
                   <div>
                     <h3 className="font-display font-bold text-slate-900">{patient.name}</h3>
@@ -216,12 +235,19 @@ export function Patients({ initialSearch = '' }: { initialSearch?: string }) {
       )}
 
       {selected && (
-        <PatientDetailModal
+        <PatientDetail
           patient={selected}
           eligibility={eligibility.filter((e) => e.patientId === selected.id)}
           schemes={schemes}
           onClose={() => setSelected(null)}
           onToast={showToast}
+          onPatientUpdated={(updated) => {
+            setSelected(updated);
+            // Optimistically update cache entry so PatientDetail reflects new data instantly
+            queryClient.setQueryData<any[]>(QK.patients, (old) =>
+              old ? old.map((p) => (p.id === updated.id ? updated : p)) : old
+            );
+          }}
         />
       )}
       {showAddModal && (
@@ -229,9 +255,9 @@ export function Patients({ initialSearch = '' }: { initialSearch?: string }) {
           onClose={() => setShowAddModal(false)}
           onAdd={async (payload) => {
             try {
-              const created = (await createPatient(payload)) as Patient;
-              setPatients((prev) => [created, ...prev]);
+              const created = (await createPatientMutation.mutateAsync(payload)) as Patient;
               showToast(`Patient ${created.name} added successfully!`);
+              setShowAddModal(false);
               return true;
             } catch {
               showToast('Could not save to server — check that the API is running.');
@@ -421,6 +447,8 @@ function PatientDetailModal({
             </div>
           </div>
 
+          <PatientDocuments patientId={patient.id} patientName={patient.name} />
+
           <div>
             <h4 className="font-display font-bold text-slate-800 mb-2">Contact</h4>
             <div className="flex items-center gap-2 text-sm text-slate-600">
@@ -429,7 +457,38 @@ function PatientDetailModal({
             </div>
           </div>
 
-          <div className="flex gap-3 pt-3">
+          <div className="flex flex-wrap gap-2 pt-3">
+            <button
+              onClick={() => {
+                downloadClinicalPdf(`NHM-Record-${patient.name.replace(/\s+/g, '_')}.pdf`, {
+                  patient_name: patient.name,
+                  patient_id: patient.id,
+                  village: patient.village,
+                  age: patient.age,
+                  blood_pressure: patient.bp,
+                  bp_status: patient.status === 'critical' ? 'High / Critical' : 'Normal',
+                  hemoglobin: patient.hemoglobin,
+                  trimester: patient.trimester,
+                  symptoms: patient.riskFactors || [],
+                  flags: (patient.riskFactors || []).map((rf) => ({
+                    title: rf,
+                    severity: patient.status === 'critical' ? 'critical' : 'high',
+                    action: 'Referral to Primary Health Centre Medical Officer for follow-up.',
+                  })),
+                  schemes: eligibility.map((e) => ({
+                    name: schemes.find((s) => s.id === e.schemeId)?.name || e.schemeId,
+                    status: e.status,
+                    reasons: e.benefitReceived ? [e.benefitReceived] : [],
+                  })),
+                  report: `Antenatal / Primary Healthcare Profile for ${patient.name}. Gestational window: ${patient.trimester} trimester. Recorded BP: ${patient.bp}. Current clinical status: ${patient.status.toUpperCase()}.`,
+                });
+                onToast(`Downloaded official NHM Form 4B for ${patient.name}`);
+              }}
+              className="btn-ghost border border-slate-300 dark:border-slate-600 flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold"
+            >
+              <Download className="w-4 h-4 text-primary-600" />
+              Download NHM Record
+            </button>
             <button
               onClick={async () => {
                 const d = new Date();
@@ -443,18 +502,22 @@ function PatientDetailModal({
                 }
                 onClose();
               }}
-              className="btn-primary flex-1"
+              className="btn-primary flex-1 text-xs"
             >
               Schedule Visit
             </button>
             <button
               onClick={() => {
-                window.location.href = `tel:${patient.phone}`;
-                onToast(`Dialing ${patient.phone}...`);
+                if (patient.phone) {
+                  window.location.href = `tel:${patient.phone}`;
+                  onToast(`Dialing ${patient.phone}...`);
+                } else {
+                  onToast('No phone number recorded for patient.');
+                }
               }}
-              className="btn-ghost border border-slate-200 flex-1"
+              className="btn-ghost border border-slate-200 text-xs px-3"
             >
-              Call Patient
+              Call
             </button>
           </div>
         </div>

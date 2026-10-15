@@ -1,0 +1,9 @@
+{
+  "id": "visit_009",
+  "language": "te-en",
+  "village": "Sundarpur",
+  "patient_name": "Pooja Kumari",
+  "reference": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks ago, MCP card issued, Aadhaar linked for PMMVY first child benefit.",
+  "hypothesis": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks, MCP card given, Aadhaar linked for PMMVY.",
+  "audio_file": "evaluation/data/audio/visit_009.wav"
+}

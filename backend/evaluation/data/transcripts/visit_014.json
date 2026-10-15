@@ -1,0 +1,9 @@
+{
+  "id": "visit_014",
+  "language": "ta-en",
+  "village": "Sundarpur",
+  "patient_name": "Geeta Yadav",
+  "reference": "Visited Geeta Yadav 52 years in Sundarpur, recorded BP 155/95, complaints of dizziness and blurred vision, referred to PHC.",
+  "hypothesis": "Visited Geeta Yadav 52 years in Sundarpur, BP 155 95, dizziness and blurred vision, refer to PHC.",
+  "audio_file": "evaluation/data/audio/visit_014.wav"
+}

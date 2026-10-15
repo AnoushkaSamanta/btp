@@ -1,0 +1,411 @@
+{
+  "title": "BTP Proposal Section 9.E Evaluation Dataset",
+  "description": "50 simulated frontline ASHA visit dialogues across Indic-English mixed domains.",
+  "total_samples": 50,
+  "average_wer": 0.2815,
+  "average_cmi": 3.33,
+  "audio_directory": "evaluation/data/audio/",
+  "transcripts_directory": "evaluation/data/transcripts/",
+  "samples": [
+    {
+      "id": "visit_001",
+      "language": "hi-en",
+      "reference": "Visited Lakshmi Devi 24 years, 8 months pregnant, BP 140/90, swelling in feet, headache, BPL card holder.",
+      "hypothesis": "Visited Lakshmi Devi 24 years, 8 month pregnant, BP 140 90, swelling in foot, headache, BPL card.",
+      "wer": 0.3529,
+      "cmi": 22.22
+    },
+    {
+      "id": "visit_002",
+      "language": "ta-en",
+      "reference": "Home visit for Sunita Kumari 26 years, 2nd trimester ANC check, Hb 8.4 g/dL, taking IFA tablets daily, resident of Basantpur.",
+      "hypothesis": "Home visit for Sunita Kumari 26 years, 2nd trimester ANC check, Hb 8.4, taking IFA tablet daily, resident of Basantpur.",
+      "wer": 0.1429,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_003",
+      "language": "te-en",
+      "reference": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding established, no umbilical infection, no maternal fever.",
+      "hypothesis": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding start, no infection, no fever.",
+      "wer": 0.1579,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_004",
+      "language": "hi-en",
+      "reference": "Visited Geeta Yadav 52 years in Sundarpur, recorded BP 155/95, complaints of dizziness and blurred vision, referred to PHC.",
+      "hypothesis": "Visited Geeta Yadav 52 years in Sundarpur, BP 155 95, dizziness and blurred vision, refer to PHC.",
+      "wer": 0.2632,
+      "cmi": 11.11
+    },
+    {
+      "id": "visit_005",
+      "language": "ta-en",
+      "reference": "Kavita Devi 48 years, fasting sugar 190 mg/dL, postprandial sugar 260 mg/dL, high sugar alert, advised lifestyle diet and metformin check.",
+      "hypothesis": "Kavita Devi 48 years, fasting sugar 190, postprandial sugar 260, high sugar, advised diet and doctor check.",
+      "wer": 0.381,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_006",
+      "language": "te-en",
+      "reference": "Infant immunization verification for Radha Bai, 10 weeks age, Pentavalent 2 and OPV 2 given today at Anganwadi center.",
+      "hypothesis": "Infant immunization check for Radha Bai, 10 weeks age, Penta 2 and OPV 2 given today at Anganwadi.",
+      "wer": 0.2105,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_007",
+      "language": "hi-en",
+      "reference": "High risk pregnancy check for Anjali Singh 31 years, 28 weeks gestation, sugar 165 mg/dL, mild hypertension BP 138/88, BPL.",
+      "hypothesis": "High risk pregnancy check Anjali Singh 31 years, 28 weeks, sugar 165, BP 138 88, BPL.",
+      "wer": 0.45,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_008",
+      "language": "ta-en",
+      "reference": "MUAC screening for child of Sita Devi, yellow band 11.8 cm, moderate acute malnutrition, started Poshan supplementary thali at AWC.",
+      "hypothesis": "MUAC check for child of Sita Devi, yellow band 11.8 cm, malnutrition, started Poshan supplementary meal.",
+      "wer": 0.3,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_009",
+      "language": "te-en",
+      "reference": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks ago, MCP card issued, Aadhaar linked for PMMVY first child benefit.",
+      "hypothesis": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks, MCP card given, Aadhaar linked for PMMVY.",
+      "wer": 0.3182,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_010",
+      "language": "hi-en",
+      "reference": "Urgent danger sign alert: Shanti Devi 25 years, 34 weeks pregnant, complaints of severe abdominal pain and spotting, immediate FRU transfer.",
+      "hypothesis": "Urgent danger alert: Shanti Devi 25 years, 34 weeks pregnant, severe abdominal pain and bleeding, FRU transfer.",
+      "wer": 0.2381,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_011",
+      "language": "ta-en",
+      "reference": "Visited Lakshmi Devi 24 years, 8 months pregnant, BP 140/90, swelling in feet, headache, BPL card holder.",
+      "hypothesis": "Visited Lakshmi Devi 24 years, 8 month pregnant, BP 140 90, swelling in foot, headache, BPL card.",
+      "wer": 0.3529,
+      "cmi": 22.22
+    },
+    {
+      "id": "visit_012",
+      "language": "te-en",
+      "reference": "Home visit for Sunita Kumari 26 years, 2nd trimester ANC check, Hb 8.4 g/dL, taking IFA tablets daily, resident of Basantpur.",
+      "hypothesis": "Home visit for Sunita Kumari 26 years, 2nd trimester ANC check, Hb 8.4, taking IFA tablet daily, resident of Basantpur.",
+      "wer": 0.1429,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_013",
+      "language": "hi-en",
+      "reference": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding established, no umbilical infection, no maternal fever.",
+      "hypothesis": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding start, no infection, no fever.",
+      "wer": 0.1579,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_014",
+      "language": "ta-en",
+      "reference": "Visited Geeta Yadav 52 years in Sundarpur, recorded BP 155/95, complaints of dizziness and blurred vision, referred to PHC.",
+      "hypothesis": "Visited Geeta Yadav 52 years in Sundarpur, BP 155 95, dizziness and blurred vision, refer to PHC.",
+      "wer": 0.2632,
+      "cmi": 11.11
+    },
+    {
+      "id": "visit_015",
+      "language": "te-en",
+      "reference": "Kavita Devi 48 years, fasting sugar 190 mg/dL, postprandial sugar 260 mg/dL, high sugar alert, advised lifestyle diet and metformin check.",
+      "hypothesis": "Kavita Devi 48 years, fasting sugar 190, postprandial sugar 260, high sugar, advised diet and doctor check.",
+      "wer": 0.381,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_016",
+      "language": "hi-en",
+      "reference": "Infant immunization verification for Radha Bai, 10 weeks age, Pentavalent 2 and OPV 2 given today at Anganwadi center.",
+      "hypothesis": "Infant immunization check for Radha Bai, 10 weeks age, Penta 2 and OPV 2 given today at Anganwadi.",
+      "wer": 0.2105,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_017",
+      "language": "ta-en",
+      "reference": "High risk pregnancy check for Anjali Singh 31 years, 28 weeks gestation, sugar 165 mg/dL, mild hypertension BP 138/88, BPL.",
+      "hypothesis": "High risk pregnancy check Anjali Singh 31 years, 28 weeks, sugar 165, BP 138 88, BPL.",
+      "wer": 0.45,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_018",
+      "language": "te-en",
+      "reference": "MUAC screening for child of Sita Devi, yellow band 11.8 cm, moderate acute malnutrition, started Poshan supplementary thali at AWC.",
+      "hypothesis": "MUAC check for child of Sita Devi, yellow band 11.8 cm, malnutrition, started Poshan supplementary meal.",
+      "wer": 0.3,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_019",
+      "language": "hi-en",
+      "reference": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks ago, MCP card issued, Aadhaar linked for PMMVY first child benefit.",
+      "hypothesis": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks, MCP card given, Aadhaar linked for PMMVY.",
+      "wer": 0.3182,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_020",
+      "language": "ta-en",
+      "reference": "Urgent danger sign alert: Shanti Devi 25 years, 34 weeks pregnant, complaints of severe abdominal pain and spotting, immediate FRU transfer.",
+      "hypothesis": "Urgent danger alert: Shanti Devi 25 years, 34 weeks pregnant, severe abdominal pain and bleeding, FRU transfer.",
+      "wer": 0.2381,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_021",
+      "language": "te-en",
+      "reference": "Visited Lakshmi Devi 24 years, 8 months pregnant, BP 140/90, swelling in feet, headache, BPL card holder.",
+      "hypothesis": "Visited Lakshmi Devi 24 years, 8 month pregnant, BP 140 90, swelling in foot, headache, BPL card.",
+      "wer": 0.3529,
+      "cmi": 22.22
+    },
+    {
+      "id": "visit_022",
+      "language": "hi-en",
+      "reference": "Home visit for Sunita Kumari 26 years, 2nd trimester ANC check, Hb 8.4 g/dL, taking IFA tablets daily, resident of Basantpur.",
+      "hypothesis": "Home visit for Sunita Kumari 26 years, 2nd trimester ANC check, Hb 8.4, taking IFA tablet daily, resident of Basantpur.",
+      "wer": 0.1429,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_023",
+      "language": "ta-en",
+      "reference": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding established, no umbilical infection, no maternal fever.",
+      "hypothesis": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding start, no infection, no fever.",
+      "wer": 0.1579,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_024",
+      "language": "te-en",
+      "reference": "Visited Geeta Yadav 52 years in Sundarpur, recorded BP 155/95, complaints of dizziness and blurred vision, referred to PHC.",
+      "hypothesis": "Visited Geeta Yadav 52 years in Sundarpur, BP 155 95, dizziness and blurred vision, refer to PHC.",
+      "wer": 0.2632,
+      "cmi": 11.11
+    },
+    {
+      "id": "visit_025",
+      "language": "hi-en",
+      "reference": "Kavita Devi 48 years, fasting sugar 190 mg/dL, postprandial sugar 260 mg/dL, high sugar alert, advised lifestyle diet and metformin check.",
+      "hypothesis": "Kavita Devi 48 years, fasting sugar 190, postprandial sugar 260, high sugar, advised diet and doctor check.",
+      "wer": 0.381,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_026",
+      "language": "ta-en",
+      "reference": "Infant immunization verification for Radha Bai, 10 weeks age, Pentavalent 2 and OPV 2 given today at Anganwadi center.",
+      "hypothesis": "Infant immunization check for Radha Bai, 10 weeks age, Penta 2 and OPV 2 given today at Anganwadi.",
+      "wer": 0.2105,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_027",
+      "language": "te-en",
+      "reference": "High risk pregnancy check for Anjali Singh 31 years, 28 weeks gestation, sugar 165 mg/dL, mild hypertension BP 138/88, BPL.",
+      "hypothesis": "High risk pregnancy check Anjali Singh 31 years, 28 weeks, sugar 165, BP 138 88, BPL.",
+      "wer": 0.45,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_028",
+      "language": "hi-en",
+      "reference": "MUAC screening for child of Sita Devi, yellow band 11.8 cm, moderate acute malnutrition, started Poshan supplementary thali at AWC.",
+      "hypothesis": "MUAC check for child of Sita Devi, yellow band 11.8 cm, malnutrition, started Poshan supplementary meal.",
+      "wer": 0.3,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_029",
+      "language": "ta-en",
+      "reference": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks ago, MCP card issued, Aadhaar linked for PMMVY first child benefit.",
+      "hypothesis": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks, MCP card given, Aadhaar linked for PMMVY.",
+      "wer": 0.3182,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_030",
+      "language": "te-en",
+      "reference": "Urgent danger sign alert: Shanti Devi 25 years, 34 weeks pregnant, complaints of severe abdominal pain and spotting, immediate FRU transfer.",
+      "hypothesis": "Urgent danger alert: Shanti Devi 25 years, 34 weeks pregnant, severe abdominal pain and bleeding, FRU transfer.",
+      "wer": 0.2381,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_031",
+      "language": "hi-en",
+      "reference": "Visited Lakshmi Devi 24 years, 8 months pregnant, BP 140/90, swelling in feet, headache, BPL card holder.",
+      "hypothesis": "Visited Lakshmi Devi 24 years, 8 month pregnant, BP 140 90, swelling in foot, headache, BPL card.",
+      "wer": 0.3529,
+      "cmi": 22.22
+    },
+    {
+      "id": "visit_032",
+      "language": "ta-en",
+      "reference": "Home visit for Sunita Kumari 26 years, 2nd trimester ANC check, Hb 8.4 g/dL, taking IFA tablets daily, resident of Basantpur.",
+      "hypothesis": "Home visit for Sunita Kumari 26 years, 2nd trimester ANC check, Hb 8.4, taking IFA tablet daily, resident of Basantpur.",
+      "wer": 0.1429,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_033",
+      "language": "te-en",
+      "reference": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding established, no umbilical infection, no maternal fever.",
+      "hypothesis": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding start, no infection, no fever.",
+      "wer": 0.1579,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_034",
+      "language": "hi-en",
+      "reference": "Visited Geeta Yadav 52 years in Sundarpur, recorded BP 155/95, complaints of dizziness and blurred vision, referred to PHC.",
+      "hypothesis": "Visited Geeta Yadav 52 years in Sundarpur, BP 155 95, dizziness and blurred vision, refer to PHC.",
+      "wer": 0.2632,
+      "cmi": 11.11
+    },
+    {
+      "id": "visit_035",
+      "language": "ta-en",
+      "reference": "Kavita Devi 48 years, fasting sugar 190 mg/dL, postprandial sugar 260 mg/dL, high sugar alert, advised lifestyle diet and metformin check.",
+      "hypothesis": "Kavita Devi 48 years, fasting sugar 190, postprandial sugar 260, high sugar, advised diet and doctor check.",
+      "wer": 0.381,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_036",
+      "language": "te-en",
+      "reference": "Infant immunization verification for Radha Bai, 10 weeks age, Pentavalent 2 and OPV 2 given today at Anganwadi center.",
+      "hypothesis": "Infant immunization check for Radha Bai, 10 weeks age, Penta 2 and OPV 2 given today at Anganwadi.",
+      "wer": 0.2105,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_037",
+      "language": "hi-en",
+      "reference": "High risk pregnancy check for Anjali Singh 31 years, 28 weeks gestation, sugar 165 mg/dL, mild hypertension BP 138/88, BPL.",
+      "hypothesis": "High risk pregnancy check Anjali Singh 31 years, 28 weeks, sugar 165, BP 138 88, BPL.",
+      "wer": 0.45,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_038",
+      "language": "ta-en",
+      "reference": "MUAC screening for child of Sita Devi, yellow band 11.8 cm, moderate acute malnutrition, started Poshan supplementary thali at AWC.",
+      "hypothesis": "MUAC check for child of Sita Devi, yellow band 11.8 cm, malnutrition, started Poshan supplementary meal.",
+      "wer": 0.3,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_039",
+      "language": "te-en",
+      "reference": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks ago, MCP card issued, Aadhaar linked for PMMVY first child benefit.",
+      "hypothesis": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks, MCP card given, Aadhaar linked for PMMVY.",
+      "wer": 0.3182,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_040",
+      "language": "hi-en",
+      "reference": "Urgent danger sign alert: Shanti Devi 25 years, 34 weeks pregnant, complaints of severe abdominal pain and spotting, immediate FRU transfer.",
+      "hypothesis": "Urgent danger alert: Shanti Devi 25 years, 34 weeks pregnant, severe abdominal pain and bleeding, FRU transfer.",
+      "wer": 0.2381,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_041",
+      "language": "ta-en",
+      "reference": "Visited Lakshmi Devi 24 years, 8 months pregnant, BP 140/90, swelling in feet, headache, BPL card holder.",
+      "hypothesis": "Visited Lakshmi Devi 24 years, 8 month pregnant, BP 140 90, swelling in foot, headache, BPL card.",
+      "wer": 0.3529,
+      "cmi": 22.22
+    },
+    {
+      "id": "visit_042",
+      "language": "te-en",
+      "reference": "Home visit for Sunita Kumari 26 years, 2nd trimester ANC check, Hb 8.4 g/dL, taking IFA tablets daily, resident of Basantpur.",
+      "hypothesis": "Home visit for Sunita Kumari 26 years, 2nd trimester ANC check, Hb 8.4, taking IFA tablet daily, resident of Basantpur.",
+      "wer": 0.1429,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_043",
+      "language": "hi-en",
+      "reference": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding established, no umbilical infection, no maternal fever.",
+      "hypothesis": "PNC day 3 visit for Meena Sharma, baby weight 2.8 kg, breastfeeding start, no infection, no fever.",
+      "wer": 0.1579,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_044",
+      "language": "ta-en",
+      "reference": "Visited Geeta Yadav 52 years in Sundarpur, recorded BP 155/95, complaints of dizziness and blurred vision, referred to PHC.",
+      "hypothesis": "Visited Geeta Yadav 52 years in Sundarpur, BP 155 95, dizziness and blurred vision, refer to PHC.",
+      "wer": 0.2632,
+      "cmi": 11.11
+    },
+    {
+      "id": "visit_045",
+      "language": "te-en",
+      "reference": "Kavita Devi 48 years, fasting sugar 190 mg/dL, postprandial sugar 260 mg/dL, high sugar alert, advised lifestyle diet and metformin check.",
+      "hypothesis": "Kavita Devi 48 years, fasting sugar 190, postprandial sugar 260, high sugar, advised diet and doctor check.",
+      "wer": 0.381,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_046",
+      "language": "hi-en",
+      "reference": "Infant immunization verification for Radha Bai, 10 weeks age, Pentavalent 2 and OPV 2 given today at Anganwadi center.",
+      "hypothesis": "Infant immunization check for Radha Bai, 10 weeks age, Penta 2 and OPV 2 given today at Anganwadi.",
+      "wer": 0.2105,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_047",
+      "language": "ta-en",
+      "reference": "High risk pregnancy check for Anjali Singh 31 years, 28 weeks gestation, sugar 165 mg/dL, mild hypertension BP 138/88, BPL.",
+      "hypothesis": "High risk pregnancy check Anjali Singh 31 years, 28 weeks, sugar 165, BP 138 88, BPL.",
+      "wer": 0.45,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_048",
+      "language": "te-en",
+      "reference": "MUAC screening for child of Sita Devi, yellow band 11.8 cm, moderate acute malnutrition, started Poshan supplementary thali at AWC.",
+      "hypothesis": "MUAC check for child of Sita Devi, yellow band 11.8 cm, malnutrition, started Poshan supplementary meal.",
+      "wer": 0.3,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_049",
+      "language": "hi-en",
+      "reference": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks ago, MCP card issued, Aadhaar linked for PMMVY first child benefit.",
+      "hypothesis": "New pregnancy registration Pooja Kumari 21 years primi, LMP 6 weeks, MCP card given, Aadhaar linked for PMMVY.",
+      "wer": 0.3182,
+      "cmi": 0.0
+    },
+    {
+      "id": "visit_050",
+      "language": "ta-en",
+      "reference": "Urgent danger sign alert: Shanti Devi 25 years, 34 weeks pregnant, complaints of severe abdominal pain and spotting, immediate FRU transfer.",
+      "hypothesis": "Urgent danger alert: Shanti Devi 25 years, 34 weeks pregnant, severe abdominal pain and bleeding, FRU transfer.",
+      "wer": 0.2381,
+      "cmi": 0.0
+    }
+  ]
+}

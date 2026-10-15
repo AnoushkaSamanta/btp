@@ -23,7 +23,14 @@ pypdf
 
 groq
 ollama
+httpx
+langdetect
 
 python-dotenv
 pytest
 numpy
+reportlab>=4.0.0
+openpyxl>=3.1.0
+matplotlib>=3.7.0
+pillow>=10.0.0
+
