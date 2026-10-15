@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: asha-copilot-api
+    runtime: python
+    buildCommand: pip install -r requirements-lite.txt
+    startCommand: python -m uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ASHA_DB_PATH
+        value: data/asha.db
+      - key: ASHA_USE_LLM
+        value: "false"
+      - key: ASHA_WHISPER_MODEL
+        value: small
+      - key: ASHA_MAX_AUDIO_UPLOAD_BYTES
+        value: "20971520"
+      - key: ASHA_CORS_ORIGINS
+        value: "https://asha-copilot.vercel.app,http://localhost:5173"
+    disk:
+      name: asha-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

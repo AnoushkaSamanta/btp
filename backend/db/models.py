@@ -6,30 +6,33 @@ from sqlmodel import Field, SQLModel, Column, JSON
 
 class Patient(SQLModel, table=True):
     id: str = Field(primary_key=True)
-    name: str
-    age: int = 0
-    village: str = ""
-    phone: str = ""
+    name: str = ""
+    age: Optional[int] = 0
+    village: Optional[str] = ""
+    phone: Optional[str] = ""
     status: str = "routine"
-    trimester: str = "1st"
-    lmp_date: str = ""
-    gravida: int = 1
-    para: int = 0
+    trimester: Optional[str] = "1st"
+    lmp_date: Optional[str] = ""
+    gravida: Optional[int] = 1
+    para: Optional[int] = 0
     risk_factors: list = Field(default_factory=list, sa_column=Column(JSON))
-    last_visit: str = ""
-    next_visit: str = ""
-    blood_group: str = ""
-    weight: float = 0.0
-    bp: str = ""
-    hemoglobin: float = 0.0
+    last_visit: Optional[str] = ""
+    next_visit: Optional[str] = ""
+    blood_group: Optional[str] = "B+"
+    weight: Optional[float] = 0.0
+    bp: Optional[str] = ""
+    hemoglobin: Optional[float] = 0.0
     aadhaar_linked: bool = True
     bpl_card: bool = False
     jsy_registered: bool = False
     pmjay_eligible: bool = False
     income_category: str = "APL"
-    children_count: int = 0
+    children_count: Optional[int] = 0
     first_living_child: bool = False
-    gender: str = "Female"
+    gender: Optional[str] = "Female"
+    photo_url: Optional[str] = ""
+    medications: list = Field(default_factory=list, sa_column=Column(JSON))
+    clinical_notes: list = Field(default_factory=list, sa_column=Column(JSON))
 
 
 class Visit(SQLModel, table=True):
@@ -100,3 +103,47 @@ class FollowUpTask(SQLModel, table=True):
     priority: str = "routine"
     done: bool = False
     created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+
+
+class TrainingProgress(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    worker_id: str = "ASHA-NHM-042"
+    module_id: str
+    completed_lessons: list = Field(default_factory=list, sa_column=Column(JSON))
+    progress_percent: int = 0
+    quiz_score: Optional[int] = None
+    quiz_passed: bool = False
+    completed_at: Optional[str] = None
+    updated_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+
+
+class TrainingCertificate(SQLModel, table=True):
+    id: str = Field(primary_key=True)
+    worker_id: str = "ASHA-NHM-042"
+    worker_name: str = "Frontline Health Worker"
+    module_id: str
+    module_title: str
+    score: int = 100
+    issued_date: str = Field(default_factory=lambda: datetime.utcnow().strftime("%Y-%m-%d"))
+    certificate_number: str = ""
+    created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+
+
+class PatientDocument(SQLModel, table=True):
+    id: str = Field(primary_key=True)
+    patient_id: str = Field(index=True)
+    patient_name: str = ""
+    scheme_id: str = Field(index=True)
+    document_type: str = Field(index=True)
+    document_label: str = ""
+    file_name: str = ""
+    file_path: str = ""
+    file_size: int = 0
+    mime_type: str = "application/octet-stream"
+    status: str = "uploaded"  # pending | uploaded | verified | rejected
+    uploaded_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    verified_at: Optional[str] = None
+    verified_by: Optional[str] = None
+    notes: Optional[str] = None
+
+

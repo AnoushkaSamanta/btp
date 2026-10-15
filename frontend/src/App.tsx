@@ -12,7 +12,7 @@ import { Immunization } from '@/components/Immunization';
 import { Training } from '@/components/Training';
 import { notifications as seedNotifications } from '@/data';
 import { fetchNotifications, markNotificationRead, markNotificationsRead, searchRegistry } from '@/lib/api';
-import { getPreferences, type AppPreferences } from '@/lib/preferences';
+import { getPreferences, workerInitials, type AppPreferences } from '@/lib/preferences';
 import { t } from '@/lib/i18n';
 import type { ViewId, AppNotification, Patient, Visit } from '@/types';
 
@@ -34,6 +34,7 @@ function App() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [patientSearch, setPatientSearch] = useState('');
   const [focusVisitId, setFocusVisitId] = useState('');
+  const [focusPatientId, setFocusPatientId] = useState('');
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', preferences.darkMode);
@@ -62,6 +63,17 @@ function App() {
     return () => window.clearTimeout(timer);
   }, [searchQ]);
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        document.getElementById('global-search')?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const handleNavigate = (view: ViewId) => {
     setActiveView(view);
     setMobileNavOpen(false);
@@ -84,13 +96,29 @@ function App() {
   const renderView = () => {
     switch (activeView) {
       case 'dashboard':
-        return <Dashboard onNavigate={handleNavigate} />;
+        return (
+          <Dashboard
+            onNavigate={handleNavigate}
+            onSelectPatient={(pId) => {
+              setFocusPatientId(pId);
+              setActiveView('patients');
+            }}
+          />
+        );
       case 'voice':
-        return <VoiceAssistant />;
+        return <VoiceAssistant onNavigate={handleNavigate} />;
       case 'patients':
-        return <Patients initialSearch={patientSearch} />;
+        return <Patients initialSearch={patientSearch} initialPatientId={focusPatientId} />;
       case 'schedule':
-        return <Schedule focusVisitId={focusVisitId} />;
+        return (
+          <Schedule
+            focusVisitId={focusVisitId}
+            onSelectPatient={(pId) => {
+              setFocusPatientId(pId);
+              setActiveView('patients');
+            }}
+          />
+        );
       case 'resources':
         return <Resources />;
       case 'reports':
@@ -109,7 +137,7 @@ function App() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <div className={`fixed inset-0 z-50 lg:hidden ${mobileNavOpen ? '' : 'hidden'}`}>
         <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onClick={() => setMobileNavOpen(false)} />
         <div className="absolute left-0 top-0 bottom-0 animate-slide-in-right">
@@ -122,11 +150,7 @@ function App() {
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col relative overflow-hidden">
-        {/* Soft background glow orbs */}
-        <div className="absolute top-10 right-10 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl pointer-events-none animate-float" />
-        <div className="absolute top-1/2 left-10 w-72 h-72 bg-sky-500/10 rounded-full blur-3xl pointer-events-none animate-float-slow" />
-
-        <header className="sticky top-0 z-30 glass dark:glass-dark border-b border-slate-200/60 dark:border-slate-800 px-6 py-3.5 flex items-center gap-4 shadow-sm">
+        <header className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-3 flex items-center gap-4">
           <button
             onClick={() => setMobileNavOpen(!mobileNavOpen)}
             className="lg:hidden w-10 h-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-all cursor-pointer"
@@ -137,6 +161,7 @@ function App() {
           <div className="flex-1 max-w-md relative group">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
             <input
+              id="global-search"
               type="text"
               value={searchQ}
               onChange={(e) => setSearchQ(e.target.value)}
@@ -195,7 +220,7 @@ function App() {
             >
               <Bell className="w-5 h-5 text-slate-500 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200 transition-colors" />
               {preferences.notifications && unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-gradient-to-br from-accent-400 to-accent-500 rounded-full ring-2 ring-white dark:ring-slate-900 text-white text-[10px] font-bold animate-pulse">
+                <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-accent-600 rounded-full ring-2 ring-white dark:ring-slate-900 text-white text-[10px] font-bold">
                   {unreadCount}
                 </span>
               )}
@@ -265,16 +290,16 @@ function App() {
               type="button"
               aria-label="Open worker profile"
               onClick={toggleProfilePanel}
-              className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-sky-500/20 hover:scale-105 transition-all cursor-pointer"
+              className="w-10 h-10 rounded-lg bg-primary-700 flex items-center justify-center text-white font-semibold text-sm"
             >
-              RS
+              {workerInitials(preferences.workerName)}
             </button>
             {profileOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
-                <div className="absolute right-0 top-12 z-50 w-64 card-elevated rounded-2xl p-4 shadow-2xl animate-slide-up border border-slate-200 dark:border-slate-700">
-                  <p className="font-bold text-slate-800 dark:text-slate-100">Rekha Singh</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Demo ASHA worker · Ramnagar Sector</p>
+                <div className="absolute right-0 top-12 z-50 w-64 card-elevated rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                  <p className="font-semibold text-slate-800 dark:text-slate-100">{preferences.workerName}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{preferences.sector} · {preferences.workerId}</p>
                   <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <p className="text-xs text-slate-400">Language: <span className="font-semibold text-primary-600">{preferences.language}</span></p>
                   </div>

@@ -1,0 +1,9 @@
+{
+  "id": "visit_030",
+  "language": "te-en",
+  "village": "Kalyanpur",
+  "patient_name": "Shanti Devi",
+  "reference": "Urgent danger sign alert: Shanti Devi 25 years, 34 weeks pregnant, complaints of severe abdominal pain and spotting, immediate FRU transfer.",
+  "hypothesis": "Urgent danger alert: Shanti Devi 25 years, 34 weeks pregnant, severe abdominal pain and bleeding, FRU transfer.",
+  "audio_file": "evaluation/data/audio/visit_030.wav"
+}

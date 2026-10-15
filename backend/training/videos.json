@@ -1,0 +1,332 @@
+{
+  "t1": {
+    "channel": "National Health Systems Resource Centre (NHSRC)",
+    "officialSource": "MoHFW / NHM Training Division",
+    "videos": [
+      {
+        "lessonId": 1,
+        "title": "Introduction to Antenatal Care Protocols - NHM Training",
+        "youtubeUrl": "https://www.youtube.com/embed/qETtJY-vDzs",
+        "videoId": "qETtJY-vDzs",
+        "duration": "5:30"
+      },
+      {
+        "lessonId": 2,
+        "title": "First Trimester Registration & MCP Card Documentation",
+        "youtubeUrl": "https://www.youtube.com/embed/qETtJY-vDzs",
+        "videoId": "qETtJY-vDzs",
+        "duration": "6:15"
+      },
+      {
+        "lessonId": 3,
+        "title": "Clinical Examinations: BP, Weight & Vitals Surveillance",
+        "youtubeUrl": "https://www.youtube.com/embed/qETtJY-vDzs",
+        "videoId": "qETtJY-vDzs",
+        "duration": "7:40"
+      },
+      {
+        "lessonId": 4,
+        "title": "Point-of-Care Laboratory Diagnostics: Hemoglobin & Urine Sugar",
+        "youtubeUrl": "https://www.youtube.com/embed/qETtJY-vDzs",
+        "videoId": "qETtJY-vDzs",
+        "duration": "6:05"
+      },
+      {
+        "lessonId": 5,
+        "title": "Tetanus & Diphtheria (Td) Immunization Timelines",
+        "youtubeUrl": "https://www.youtube.com/embed/qETtJY-vDzs",
+        "videoId": "qETtJY-vDzs",
+        "duration": "5:10"
+      },
+      {
+        "lessonId": 6,
+        "title": "Nutritional Counseling & IFA Supplementation Guidelines",
+        "youtubeUrl": "https://www.youtube.com/embed/qETtJY-vDzs",
+        "videoId": "qETtJY-vDzs",
+        "duration": "8:20"
+      },
+      {
+        "lessonId": 7,
+        "title": "Birth Preparedness & Complication Readiness Planning",
+        "youtubeUrl": "https://www.youtube.com/embed/qETtJY-vDzs",
+        "videoId": "qETtJY-vDzs",
+        "duration": "7:00"
+      },
+      {
+        "lessonId": 8,
+        "title": "PMSMA Domiciliary Identification & PHC Escalation Flow",
+        "youtubeUrl": "https://www.youtube.com/embed/qETtJY-vDzs",
+        "videoId": "qETtJY-vDzs",
+        "duration": "6:50"
+      }
+    ]
+  },
+  "t2": {
+    "channel": "NHM Maternal Health Division",
+    "officialSource": "NHM PMSMA Clinical Guidelines",
+    "videos": [
+      {
+        "lessonId": 1,
+        "title": "Obstetric Red Flags: Severe Headache & Blurred Vision (Preeclampsia)",
+        "youtubeUrl": "https://www.youtube.com/embed/kXBHRjHD6sc",
+        "videoId": "kXBHRjHD6sc",
+        "duration": "6:00"
+      },
+      {
+        "lessonId": 2,
+        "title": "Antepartum & Postpartum Hemorrhage Triage",
+        "youtubeUrl": "https://www.youtube.com/embed/kXBHRjHD6sc",
+        "videoId": "kXBHRjHD6sc",
+        "duration": "7:15"
+      },
+      {
+        "lessonId": 3,
+        "title": "Convulsions, Eclampsia Management & Airway Maintenance",
+        "youtubeUrl": "https://www.youtube.com/embed/kXBHRjHD6sc",
+        "videoId": "kXBHRjHD6sc",
+        "duration": "8:30"
+      },
+      {
+        "lessonId": 4,
+        "title": "Absent Fetal Movements & Acute Severe Abdominal Pain",
+        "youtubeUrl": "https://www.youtube.com/embed/kXBHRjHD6sc",
+        "videoId": "kXBHRjHD6sc",
+        "duration": "5:45"
+      },
+      {
+        "lessonId": 5,
+        "title": "Maternal Sepsis & High Grade Puerperal Pyrexia",
+        "youtubeUrl": "https://www.youtube.com/embed/kXBHRjHD6sc",
+        "videoId": "kXBHRjHD6sc",
+        "duration": "6:20"
+      },
+      {
+        "lessonId": 6,
+        "title": "Emergency Referral Protocols (108/102) & Handover Slip Formalities",
+        "youtubeUrl": "https://www.youtube.com/embed/kXBHRjHD6sc",
+        "videoId": "kXBHRjHD6sc",
+        "duration": "7:00"
+      }
+    ]
+  },
+  "t3": {
+    "channel": "Universal Immunization Programme (UIP) MoHFW",
+    "officialSource": "MoHFW National Immunization Division",
+    "videos": [
+      {
+        "lessonId": 1,
+        "title": "Universal Immunization Programme (UIP) National Strategy",
+        "youtubeUrl": "https://www.youtube.com/embed/1a1U2zuytxw",
+        "videoId": "1a1U2zuytxw",
+        "duration": "6:30"
+      },
+      {
+        "lessonId": 2,
+        "title": "Cold Chain Equipment, ILR Management & Vaccine Vial Monitors",
+        "youtubeUrl": "https://www.youtube.com/embed/1a1U2zuytxw",
+        "videoId": "1a1U2zuytxw",
+        "duration": "8:10"
+      },
+      {
+        "lessonId": 3,
+        "title": "Birth Dose Immunization: BCG, OPV-0, Hepatitis-B",
+        "youtubeUrl": "https://www.youtube.com/embed/1a1U2zuytxw",
+        "videoId": "1a1U2zuytxw",
+        "duration": "7:00"
+      },
+      {
+        "lessonId": 4,
+        "title": "Primary Infant Schedule at 6, 10, 14 Weeks: Pentavalent, Rota & fIPV",
+        "youtubeUrl": "https://www.youtube.com/embed/1a1U2zuytxw",
+        "videoId": "1a1U2zuytxw",
+        "duration": "9:00"
+      },
+      {
+        "lessonId": 5,
+        "title": "Measles-Rubella (MR) & Vitamin-A Dosing at 9 Months",
+        "youtubeUrl": "https://www.youtube.com/embed/1a1U2zuytxw",
+        "videoId": "1a1U2zuytxw",
+        "duration": "6:45"
+      },
+      {
+        "lessonId": 6,
+        "title": "Tracking Dropout & Due Lists on U-WIN Platform",
+        "youtubeUrl": "https://www.youtube.com/embed/1a1U2zuytxw",
+        "videoId": "1a1U2zuytxw",
+        "duration": "7:15"
+      },
+      {
+        "lessonId": 7,
+        "title": "AEFI (Adverse Events Following Immunization) Identification & Action",
+        "youtubeUrl": "https://www.youtube.com/embed/1a1U2zuytxw",
+        "videoId": "1a1U2zuytxw",
+        "duration": "8:00"
+      }
+    ]
+  },
+  "t4": {
+    "channel": "Anemia Mukt Bharat (AMB)",
+    "officialSource": "National Health Mission - AMB Toolkit",
+    "videos": [
+      {
+        "lessonId": 1,
+        "title": "Anemia Mukt Bharat: 6x6x6 Strategy & Target Demographics",
+        "youtubeUrl": "https://www.youtube.com/embed/UxsGtZMF_34",
+        "videoId": "UxsGtZMF_34",
+        "duration": "5:50"
+      },
+      {
+        "lessonId": 2,
+        "title": "Clinical Grading of Pallor: Conjunctiva, Tongue, Palmar Creases",
+        "youtubeUrl": "https://www.youtube.com/embed/UxsGtZMF_34",
+        "videoId": "UxsGtZMF_34",
+        "duration": "6:40"
+      },
+      {
+        "lessonId": 3,
+        "title": "Prophylactic vs Therapeutic IFA Dosing Standards",
+        "youtubeUrl": "https://www.youtube.com/embed/UxsGtZMF_34",
+        "videoId": "UxsGtZMF_34",
+        "duration": "7:10"
+      },
+      {
+        "lessonId": 4,
+        "title": "Biannual Deworming (Albendazole) Schedule & Implementation",
+        "youtubeUrl": "https://www.youtube.com/embed/UxsGtZMF_34",
+        "videoId": "UxsGtZMF_34",
+        "duration": "5:30"
+      },
+      {
+        "lessonId": 5,
+        "title": "Severe Anemia (Hb < 7 g/dL) Red-Flag Referral & Parenteral Iron",
+        "youtubeUrl": "https://www.youtube.com/embed/UxsGtZMF_34",
+        "videoId": "UxsGtZMF_34",
+        "duration": "7:50"
+      }
+    ]
+  },
+  "t5": {
+    "channel": "NHM Maternal & Child Health Division",
+    "officialSource": "NHM PNC National Guidelines",
+    "videos": [
+      {
+        "lessonId": 1,
+        "title": "Postnatal Schedule: Mandatory Domiciliary Visits",
+        "youtubeUrl": "https://www.youtube.com/embed/n8J5BD0wico",
+        "videoId": "n8J5BD0wico",
+        "duration": "6:10"
+      },
+      {
+        "lessonId": 2,
+        "title": "Maternal Assessment: Lochia, Perineum Healing & Uterine Involution",
+        "youtubeUrl": "https://www.youtube.com/embed/n8J5BD0wico",
+        "videoId": "n8J5BD0wico",
+        "duration": "7:20"
+      },
+      {
+        "lessonId": 3,
+        "title": "Optimal Breastfeeding Techniques: Latch & Positioning Counseling",
+        "youtubeUrl": "https://www.youtube.com/embed/n8J5BD0wico",
+        "videoId": "n8J5BD0wico",
+        "duration": "8:00"
+      },
+      {
+        "lessonId": 4,
+        "title": "Neonatal Thermal Care & Kangaroo Mother Care (KMC)",
+        "youtubeUrl": "https://www.youtube.com/embed/n8J5BD0wico",
+        "videoId": "n8J5BD0wico",
+        "duration": "6:50"
+      },
+      {
+        "lessonId": 5,
+        "title": "Postpartum Danger Signs & Sepsis Identification",
+        "youtubeUrl": "https://www.youtube.com/embed/n8J5BD0wico",
+        "videoId": "n8J5BD0wico",
+        "duration": "7:30"
+      },
+      {
+        "lessonId": 6,
+        "title": "Postpartum Family Planning (PPFP) & Contraceptive Counseling",
+        "youtubeUrl": "https://www.youtube.com/embed/n8J5BD0wico",
+        "videoId": "n8J5BD0wico",
+        "duration": "6:40"
+      }
+    ]
+  },
+  "t6": {
+    "channel": "NHM High Risk Pregnancy Division",
+    "officialSource": "PMSMA & ICMR HRP Guidelines",
+    "videos": [
+      {
+        "lessonId": 1,
+        "title": "High-Risk Pregnancy Identification & Risk Stratification Matrix",
+        "youtubeUrl": "https://www.youtube.com/embed/sJ2EkGx6dCE",
+        "videoId": "sJ2EkGx6dCE",
+        "duration": "7:15"
+      },
+      {
+        "lessonId": 2,
+        "title": "Gestational Hypertension & Preeclampsia Blood Pressure Monitoring",
+        "youtubeUrl": "https://www.youtube.com/embed/sJ2EkGx6dCE",
+        "videoId": "sJ2EkGx6dCE",
+        "duration": "8:20"
+      },
+      {
+        "lessonId": 3,
+        "title": "Gestational Diabetes Mellitus (GDM) OGTT Protocols",
+        "youtubeUrl": "https://www.youtube.com/embed/sJ2EkGx6dCE",
+        "videoId": "sJ2EkGx6dCE",
+        "duration": "7:50"
+      },
+      {
+        "lessonId": 4,
+        "title": "Severe Anemia Co-morbidities & Fetal Growth Retardation Surveillance",
+        "youtubeUrl": "https://www.youtube.com/embed/sJ2EkGx6dCE",
+        "videoId": "sJ2EkGx6dCE",
+        "duration": "6:30"
+      },
+      {
+        "lessonId": 5,
+        "title": "Multiple Gestation & Malpresentation Red Flags",
+        "youtubeUrl": "https://www.youtube.com/embed/sJ2EkGx6dCE",
+        "videoId": "sJ2EkGx6dCE",
+        "duration": "6:10"
+      },
+      {
+        "lessonId": 6,
+        "title": "Previous Cesarean Section (VBAC Risk) & Uterine Scar Precautions",
+        "youtubeUrl": "https://www.youtube.com/embed/sJ2EkGx6dCE",
+        "videoId": "sJ2EkGx6dCE",
+        "duration": "7:00"
+      },
+      {
+        "lessonId": 7,
+        "title": "Thyroid Disorders & Infectious Screenings (HIV, Syphilis, HBsAg)",
+        "youtubeUrl": "https://www.youtube.com/embed/sJ2EkGx6dCE",
+        "videoId": "sJ2EkGx6dCE",
+        "duration": "6:40"
+      },
+      {
+        "lessonId": 8,
+        "title": "Rh Incompatibility & Anti-D Immunoglobulin Administration Protocol",
+        "youtubeUrl": "https://www.youtube.com/embed/sJ2EkGx6dCE",
+        "videoId": "sJ2EkGx6dCE",
+        "duration": "5:50"
+      },
+      {
+        "lessonId": 9,
+        "title": "PMSMA Monthly Clinical Audit & Specialist Clinic Escort Workflow",
+        "youtubeUrl": "https://www.youtube.com/embed/sJ2EkGx6dCE",
+        "videoId": "sJ2EkGx6dCE",
+        "duration": "7:30"
+      },
+      {
+        "lessonId": 10,
+        "title": "Institutional Delivery Mapping & 108 Dedicated Transport Allocation",
+        "youtubeUrl": "https://www.youtube.com/embed/sJ2EkGx6dCE",
+        "videoId": "sJ2EkGx6dCE",
+        "duration": "6:20"
+      }
+    ]
+  }
+}

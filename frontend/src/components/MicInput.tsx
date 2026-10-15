@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Square, Loader2 } from 'lucide-react';
-import axios from 'axios';
+import { transcribeAudio } from '@/lib/api';
 
 interface MicInputProps {
   onTranscript?: (transcript: string) => void;
@@ -61,14 +61,10 @@ export function MicInput({ onTranscript, language = 'hi' }: MicInputProps) {
 
   const sendAudioToBackend = async (blob: Blob) => {
     setIsTranscribing(true);
-    const formData = new FormData();
-    formData.append('file', blob, 'recording.webm');
-    formData.append('language', language);
-
     try {
-      const res = await axios.post('/api/transcribe', formData);
-      if (res.data?.transcript && onTranscript) {
-        onTranscript(res.data.transcript);
+      const data = await transcribeAudio(blob, language);
+      if (data?.transcript && onTranscript) {
+        onTranscript(data.transcript);
       }
     } catch (error) {
       console.error('Transcription error:', error);

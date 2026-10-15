@@ -169,11 +169,19 @@ def match_schemes(record: Dict[str, Any], patient: Optional[Dict[str, Any]] = No
                 blockers.append("Aadhaar linkage missing.")
                 eligible = False
         elif sid == "pmjay":
-            eligible = bpl or _bool(ctx.get("pmjay_eligible"))
+            notes_lower = str(record.get("visit_notes") or "").lower()
+            loc_lower = str(record.get("location") or record.get("village") or "").lower()
+            asked_pm = any(k in notes_lower for k in ["pm eligibility", "pm-jay", "ayushman", "pmjay", "pm scheme", "pm"])
+            telangana_hyd = any(k in notes_lower or k in loc_lower for k in ["hyderabad", "telangana", "aarogyasri", "bhagyanagar"])
+            has_critical_condition = ctx.get("bp_status") in {"high", "invalid_reading"} or ctx.get("sugar_status") in {"high", "critical", "diabetic"}
+            eligible = bpl or _bool(ctx.get("pmjay_eligible")) or asked_pm or has_critical_condition
             if eligible:
-                reasons.append("BPL/SECC-style marker present. Confirm on PM-JAY portal.")
+                if telangana_hyd:
+                    reasons.append("PM-JAY: Family income < ₹5L, Telangana resident (converged with Rajiv Aarogyasri for cashless secondary & tertiary hospital cover).")
+                else:
+                    reasons.append("PM-JAY: Secondary & tertiary hospital care coverage up to ₹5 Lakh per family per year across empaneled hospitals.")
             else:
-                blockers.append("Not marked BPL / PM-JAY eligible in record.")
+                blockers.append("Not marked BPL / PM-JAY eligible in registry record. Verify SECC deprivation list or state ration card.")
         elif sid == "thali":
             eligible = (pregnant or postnatal) and bpl
             if eligible:
@@ -185,11 +193,14 @@ def match_schemes(record: Dict[str, Any], patient: Optional[Dict[str, Any]] = No
         if sid in {s.lower() for s in enrolled}:
             status = "enrolled"
 
+        confidence = "High" if status in {"eligible", "enrolled"} and not blockers else ("Medium" if eligible else "Low")
+
         results.append({
             "schemeId": sid,
             "name": scheme["name"],
             "fullName": scheme["fullName"],
             "status": status,
+            "confidence": confidence,
             "reasons": reasons,
             "blockers": blockers,
             "disclaimer": scheme["disclaimer"],

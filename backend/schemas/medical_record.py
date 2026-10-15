@@ -21,8 +21,11 @@ class MedicalRecord(BaseModel):
     gender: Optional[str] = Field(default=None, description="Gender (Female, Male, Other)")
     pregnancy_status: Optional[bool] = Field(default=None, description="Whether patient is currently pregnant")
     gestational_age_months: Optional[int] = Field(default=None, ge=1, le=10, description="Gestational age in months (1-10)")
-    blood_pressure: Optional[str] = Field(default=None, description="BP measurement format (e.g., '120/80')")
+    blood_pressure: Optional[str] = Field(default=None, description="BP measurement format (e.g., '120/80' or '200')")
     bp_status: Optional[str] = Field(default=None, description="BP status rating ('normal', 'high', 'low')")
+    blood_sugar: Optional[int] = Field(default=None, ge=10, le=1000, description="Blood sugar level in mg/dL")
+    sugar_status: Optional[str] = Field(default=None, description="Sugar status ('normal', 'high', 'critical')")
+    location: Optional[str] = Field(default=None, description="Extracted city, village, or location")
     swelling: Optional[bool] = Field(default=None, description="Presence of edema/swelling")
     temperature: Optional[float] = Field(default=None, description="Body temperature in Fahrenheit or Celsius")
     symptoms: Optional[List[str]] = Field(default_factory=list, description="List of recorded symptoms")
@@ -30,6 +33,7 @@ class MedicalRecord(BaseModel):
     household_info: Optional[HouseholdInfo] = Field(default=None, description="Household information")
     visit_date: Optional[str] = Field(default=None, description="Date of visit (ISO format YYYY-MM-DD)")
     visit_notes: Optional[str] = Field(default=None, description="Freeform visit notes")
+    language_detected: Optional[str] = Field(default=None, description="Detected input language code: te, hi, ta, en, or mixed")
     follow_up_required: Optional[bool] = Field(default=False, description="Whether follow-up visit is needed")
 
     @field_validator('bp_status')
@@ -37,9 +41,20 @@ class MedicalRecord(BaseModel):
     def validate_bp_status(cls, v: Optional[str]) -> Optional[str]:
         if v is not None:
             v_lower = v.lower()
-            allowed = ["normal", "high", "low"]
+            allowed = ["normal", "high", "low", "invalid_reading", "invalid"]
             if v_lower not in allowed:
                 raise ValueError(f"bp_status must be one of {allowed}, got '{v}'")
+            return v_lower
+        return v
+
+    @field_validator('sugar_status')
+    @classmethod
+    def validate_sugar_status(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            v_lower = v.lower()
+            allowed = ["normal", "pre-diabetic", "diabetic", "high", "critical", "low"]
+            if v_lower not in allowed:
+                raise ValueError(f"sugar_status must be one of {allowed}, got '{v}'")
             return v_lower
         return v
 

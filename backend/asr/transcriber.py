@@ -3,11 +3,24 @@ ASR Transcriber module for code-mixed Indic speech (Hindi, Tamil, Telugu, Englis
 """
 
 import os
+import shutil
 import logging
 from typing import Dict, Any, Optional
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Ensure ffmpeg binary is in PATH for whisper / pydub
+if not shutil.which("ffmpeg"):
+    potential_ffmpeg_paths = [
+        r"C:\Users\loq\.antigravity-ide\extensions\kilocode.kilo-code-7.8.8-win32-x64\bin",
+        r"C:\ffmpeg\bin",
+        r"C:\Program Files\ffmpeg\bin",
+    ]
+    for p in potential_ffmpeg_paths:
+        if os.path.exists(os.path.join(p, "ffmpeg.exe")):
+            os.environ["PATH"] = p + os.pathsep + os.environ.get("PATH", "")
+            break
 
 # Lazy loading avoids importing Whisper or downloading model weights at API startup.
 _whisper_models: Dict[str, Any] = {}
