@@ -24,11 +24,15 @@ export function speakText(text: string, lang: string): boolean {
     }
 
     const voice = voices.find((item) => item.lang.toLowerCase() === targetLang.toLowerCase())
-      || voices.find((item) => item.lang.toLowerCase().split("-")[0] === baseLanguage)
-      || voices[0];
+      || voices.find((item) => item.lang.toLowerCase().split("-")[0] === baseLanguage);
 
     if (voice) {
       u.voice = voice;
+    } else if (targetLang.startsWith("en")) {
+      u.voice = voices[0];
+    } else {
+      // Indic voice not available in browser; avoid letting English voices mispronounce/glitch
+      return false;
     }
     u.rate = 0.95;
     window.speechSynthesis.speak(u);

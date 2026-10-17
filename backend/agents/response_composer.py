@@ -21,29 +21,57 @@ def compose_spoken_summary(record: Dict[str, Any], protocol: Dict[str, Any], sch
     bho = lang_lower.startswith("bho") or "bhojpuri" in lang_lower
 
     if bho:
+        age = record.get("age")
+        if record.get("patient_name"):
+            p_name = record["patient_name"]
+        elif age and age <= 12:
+            p_name = f"{age} बरीस के लईका"
+        elif record.get("pregnancy_status"):
+            p_name = "गर्भवती मेहरारू"
+        else:
+            p_name = "मरीज"
+        p_loc = record.get("village") or record.get("location")
+        p_loc_str = f", {p_loc} के" if p_loc and p_loc not in ["दिन", "day", "days"] else ""
+        bp_text = f"ब्लड प्रेशर {bp}" if bp else "ब्लड प्रेशर दर्ज नइखे"
+        sugar_text = f", शुगर {sugar}" if sugar else ""
         parts = [
-            f"Ham note kar lihili: {name}{loc_str}। Blood pressure {bp_str}{sugar_str}।",
+            f"हम नोट कइनी: {p_name}{p_loc_str}। {bp_text}{sugar_text}।",
         ]
         if crit:
-            parts.append("Turant dhyan dihin: " + ", ".join(crit) + "। Protocol alert ba, agla faisla raua kareen।")
+            parts.append("तुरंत ध्यान दीं: " + ", ".join(crit) + "। अस्पताल रेफर करीं।")
         elif flag_titles:
-            parts.append("Alerts: " + ", ".join(flag_titles) + "।")
+            parts.append("अलर्ट: " + ", ".join(flag_titles) + "।")
         if eligible:
-            parts.append("Yojana jaanch: " + ", ".join(eligible) + "।")
-        parts.append("Aawaz se confirm kareen tabhi save hoi।")
+            parts.append("योजना: " + ", ".join(eligible) + "।")
+        parts.append("पुष्टि करीं तब सहेजल जाई।")
         return " ".join(parts)
 
     if hi:
+        age = record.get("age")
+        if record.get("patient_name"):
+            p_name = record["patient_name"]
+        elif age and age <= 12:
+            p_name = f"{age} साल का बच्चा"
+        elif record.get("pregnancy_status"):
+            p_name = "गर्भवती महिला"
+        else:
+            p_name = "मरीज"
+
+        p_loc = record.get("village") or record.get("location")
+        p_loc_str = f", {p_loc} निवासी" if p_loc and p_loc not in ["दिन", "day", "days"] else ""
+        bp_text = f"रक्तचाप {bp}" if bp else "रक्तचाप दर्ज नहीं है"
+        sugar_text = f", ब्लड शुगर {sugar} मिलीग्राम" if sugar else ""
+
         parts = [
-            f"Maine note kiya: {name}{loc_str}. Blood pressure {bp_str}{sugar_str}.",
+            f"मैंने नोट किया: {p_name}{p_loc_str}। {bp_text}{sugar_text}।",
         ]
         if crit:
-            parts.append("Turant dhyan: " + ", ".join(crit) + ". Yeh AI salah nahi, protocol flag hai. Aap faisla karein.")
+            parts.append("तुरंत ध्यान दें: " + ", ".join(crit) + "। तुरंत अस्पताल रेफर करें।")
         elif flag_titles:
-            parts.append("Alerts: " + ", ".join(flag_titles) + ".")
+            parts.append("अलर्ट: " + ", ".join(flag_titles) + "।")
         if eligible:
-            parts.append("Preliminary scheme check: " + ", ".join(eligible) + ". Office se verify karein.")
-        parts.append("Confirm karein tabhi save hoga.")
+            parts.append("योजना पात्रता: " + ", ".join(eligible) + "।")
+        parts.append("सहेजने के लिए पुष्टि करें।")
         return " ".join(parts)
 
     parts = [

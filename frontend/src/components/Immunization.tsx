@@ -184,22 +184,22 @@ export function Immunization() {
     if (!target) return;
     const prevStatus = target.status;
 
-    // Optimistic update
-    setImmunizationRecords((prev) =>
-      prev.map((r) => (r.id === recordId ? { ...r, status: 'completed' as const } : r))
-    );
+    // Close modal immediately for responsiveness
     setMarkGivenTarget(null);
 
-    // Call API
+    // Call API via TanStack mutation (handles cache invalidation + UI refresh)
     try {
-      await markImmunizationGiven(recordId, {
-        given_date: details.givenDate,
-        batch_no: details.batchNo,
-        given_by: details.givenBy,
-        notes: details.notes,
+      await markGivenMut.mutateAsync({
+        id: recordId,
+        payload: {
+          given_date: details.givenDate,
+          batch_no: details.batchNo,
+          given_by: details.givenBy,
+          notes: details.notes,
+        },
       });
     } catch {
-      // Backend fallback already has optimistic update
+      // Mutation failed — toast will still show but list won't update
     }
 
     // Set 5-second undo timer
@@ -224,14 +224,11 @@ export function Immunization() {
     clearTimeout(timeoutId);
     setUndoAction(null);
 
-    // Revert status
-    setImmunizationRecords((prev) =>
-      prev.map((r) => (r.id === recordId ? { ...r, status: previousStatus } : r))
-    );
+    // Revert status via mutation (handles cache invalidation)
     try {
-      await updateImmunizationStatus(recordId, previousStatus);
+      await updateImmMut.mutateAsync({ id: recordId, updates: { status: previousStatus } });
     } catch {
-      // Fallback
+      // Fallback — query will refetch on next focus
     }
     triggerToast('Vaccine status restored');
   };

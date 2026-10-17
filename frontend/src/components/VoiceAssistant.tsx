@@ -206,10 +206,20 @@ export function VoiceAssistant({ onNavigate }: { onNavigate?: (view: ViewId) => 
         setDraft(data);
         pushAssistant(data.spoken_summary, ['Full clinical pipeline — confirm to save']);
         const responseVoice = activeLang === 'Hindi' ? 'Hindi' : 'English';
-        if (getPreferences().voiceGuidance && !speakText(data.spoken_summary, responseVoice)) {
-          setVoiceStatus(`No ${responseVoice} speech voice is available in this browser. The response is available as text.`);
-        } else if (getPreferences().voiceGuidance && activeLang !== responseVoice) {
-          setVoiceStatus(`${activeLang} speech input is enabled. The generated read-back is currently in ${responseVoice}.`);
+        const audioUrl = (data as any)?.tts?.audio_url;
+        if (getPreferences().voiceGuidance) {
+          if (audioUrl) {
+            try {
+              const audio = new Audio(audioUrl);
+              audio.play().catch(() => {
+                speakText(data.spoken_summary, responseVoice);
+              });
+            } catch {
+              speakText(data.spoken_summary, responseVoice);
+            }
+          } else if (!speakText(data.spoken_summary, responseVoice)) {
+            setVoiceStatus(`No ${responseVoice} speech voice is available in this browser. The response is available as text.`);
+          }
         }
         setIsThinking(false);
         return;
@@ -229,8 +239,20 @@ export function VoiceAssistant({ onNavigate }: { onNavigate?: (view: ViewId) => 
         setDraft(chatData);
         pushAssistant(chatData.spoken_summary, ['ASHA Co-Pilot Chat Analysis']);
         const responseVoice = activeLang === 'Hindi' ? 'Hindi' : 'English';
-        if (getPreferences().voiceGuidance && !speakText(chatData.spoken_summary, responseVoice)) {
-          setVoiceStatus(`No ${responseVoice} speech voice is available in this browser. The response is available as text.`);
+        const chatAudioUrl = (chatData as any)?.tts?.audio_url;
+        if (getPreferences().voiceGuidance) {
+          if (chatAudioUrl) {
+            try {
+              const audio = new Audio(chatAudioUrl);
+              audio.play().catch(() => {
+                speakText(chatData.spoken_summary, responseVoice);
+              });
+            } catch {
+              speakText(chatData.spoken_summary, responseVoice);
+            }
+          } else if (!speakText(chatData.spoken_summary, responseVoice)) {
+            setVoiceStatus(`No ${responseVoice} speech voice is available in this browser. The response is available as text.`);
+          }
         }
         setIsThinking(false);
         return;

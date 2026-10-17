@@ -43,9 +43,15 @@ export const VoiceReadBack: React.FC<VoiceReadBackProps> = ({
         const base = targetLang.split('-')[0].toLowerCase();
         const voice =
           voices.find((v) => v.lang.toLowerCase() === targetLang.toLowerCase()) ||
-          voices.find((v) => v.lang.toLowerCase().startsWith(base)) ||
-          voices[0];
-        if (voice) utterance.voice = voice;
+          voices.find((v) => v.lang.toLowerCase().startsWith(base));
+        if (voice) {
+          utterance.voice = voice;
+        } else if (targetLang.startsWith('en')) {
+          utterance.voice = voices[0];
+        } else {
+          setIsPlaying(false);
+          return;
+        }
       }
 
       utterance.onstart = () => setIsPlaying(true);
@@ -87,7 +93,7 @@ export const VoiceReadBack: React.FC<VoiceReadBackProps> = ({
 
     const src = getAudioSource();
     if (src) {
-      if (!audioRef.current || audioRef.current.src !== src) {
+      if (!audioRef.current || !audioRef.current.src.endsWith(src)) {
         if (audioRef.current) {
           audioRef.current.pause();
         }
@@ -97,9 +103,8 @@ export const VoiceReadBack: React.FC<VoiceReadBackProps> = ({
           setHasPlayed(true);
         };
         audio.onerror = () => {
-          // Fallback to Web Speech API
+          setIsPlaying(false);
           if (text) playWebSpeech(text);
-          else setIsPlaying(false);
         };
         audioRef.current = audio;
       }
@@ -111,8 +116,8 @@ export const VoiceReadBack: React.FC<VoiceReadBackProps> = ({
           setIsPlaying(true);
         })
         .catch(() => {
+          setIsPlaying(false);
           if (text) playWebSpeech(text);
-          else setIsPlaying(false);
         });
     } else if (text) {
       playWebSpeech(text);
@@ -135,20 +140,19 @@ export const VoiceReadBack: React.FC<VoiceReadBackProps> = ({
         setHasPlayed(true);
       };
       audio.onerror = () => {
+        setIsPlaying(false);
         if (text) playWebSpeech(text);
-        else setIsPlaying(false);
       };
       audioRef.current = audio;
       audio
         .play()
         .then(() => setIsPlaying(true))
         .catch(() => {
+          setIsPlaying(false);
           if (text) playWebSpeech(text);
-          else setIsPlaying(false);
         });
     } else if (text) {
       playWebSpeech(text);
-    }
   };
 
   useEffect(() => {
